@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "Javelin1996",
+    "database": "servio-dev",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "port": 6000
+  },
+  "test": {
+    "username": "postgres",
+    "password": "Javelin1996",
+    "database": "servio-test",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "port": 6000
+  },
+  "production": {
+    "username": "postgres",
+    "password": "Javelin1996",
+    "database": "servio-prod",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "port": 6000
+  }
+}
