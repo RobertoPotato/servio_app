@@ -70,6 +70,8 @@ module.exports = (sequelize, DataTypes) => {
       userId: DataTypes.INTEGER,
       categoryId: DataTypes.INTEGER,
       statusId: DataTypes.INTEGER,
+      //TODO create a default status ID
+      //? Put each new servicein moderation for the moderator to see and change
     },
     {
       sequelize,

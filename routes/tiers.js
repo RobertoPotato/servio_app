@@ -1,60 +1,64 @@
 const express = require("express");
-const { Role } = require("../models/index");
+const { Tier } = require("../models/index");
+const router = express.Router();
 
+//TODO All these methods should only be conducted by an admin user
 // list of fillable fields
 // title
 // description
-const router = express.Router();
-//TODO All these methods should only be conducted by an admin user
+// badgeUrl
+
 //creates a new entry
 router.post("/", async (req, res) => {
-  const role = await Role.create({
+  const tier = await Tier.create({
     title: req.body.title,
     description: req.body.description,
+    badgeUrl: req.body.badgeUrl,
   });
-  res.send(role);
+  res.send(tier);
 });
 
 //gets data on specific based on id
 router.get("/:id", async (req, res) => {
-  const role = await Role.findAll({
+  const tier = await Tier.findAll({
     where: {
       id: req.params.id,
     },
   });
 
-  res.send(role);
+  res.send(tier);
 });
 
 //gets all entries from db
 router.get("/", async (req, res) => {
-  const roles = await Role.findAll();
+  const tiers = await Tier.findAll();
 
-  res.send(roles);
+  res.send(tiers);
 });
 
 //updates the data
 router.put("/:id", (req, res) => {
-  Role.update(
+  Tier.update(
     {
       title: req.body.title,
       description: req.body.description,
+      badgeUrl: req.body.badgeUrl,
     },
     {
       where: {
         id: req.params.id,
       },
     }
-  ).then(res.send("Role updated"));
+  ).then(res.send("Tier updated"));
 });
 
 //delets a particular entry.
 router.delete("/:id", (req, res) => {
-  Role.destroy({
+  Tier.destroy({
     where: {
       id: req.params.id,
     },
-  }).then(res.send("Role has been deleted"));
+  }).then(res.send("Tier has been deleted"));
 });
 
 module.exports = router;
