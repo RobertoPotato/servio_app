@@ -2,6 +2,8 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Job extends Model {
+
+    //! Look into the users table and determine which one gets fetched during eaerloading the data for a Job
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.

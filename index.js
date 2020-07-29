@@ -10,7 +10,7 @@ const reviews = require("./routes/reviews");
 const tiers = require("./routes/tiers");
 const services = require("./routes/services");
 const bids = require("./routes/bids");
-const jobs = require("./routes/jobs")
+const jobs = require("./routes/jobs");
 
 app.use(express.json());
 

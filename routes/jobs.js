@@ -1,5 +1,5 @@
 const express = require("express");
-const { Job } = require("../models/index");
+const { Job, User, Service, Status, Bid } = require("../models/index");
 
 // list of fillable fields
 // clientId
@@ -62,6 +62,15 @@ router.put("/:id", (req, res) => {
 //delets a particular entry.
 router.delete("/:id", (req, res) => {
     res.send("Invalid operation: Cannot delete a job");
+});
+
+//TODO for testing purposes
+//* load jobs with their agent
+router.get('/user/:id', async(req, res) => {
+    const task = await Job.findAll({ include:  [User, Bid, Service, Status]});
+
+    res.send(task);
+
 });
 
 module.exports = router;
