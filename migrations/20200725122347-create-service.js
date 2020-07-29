@@ -26,6 +26,14 @@ module.exports = {
       town: {
         type: Sequelize.STRING,
       },
+      lat: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      long: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       userId: {
         type: Sequelize.INTEGER,
         onDelete: "CASCADE",
@@ -53,6 +61,7 @@ module.exports = {
           as: "statusId",
         },
       },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

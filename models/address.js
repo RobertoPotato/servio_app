@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Address.belongsTo(models.User, {
-        foreignKey: "userId",
-        onDelete: "CASCADE",
-      });
+      // Address.hasOne(models.Profile, {
+      //   foreignKey: "userId",
+      //   onDelete: "CASCADE",
+      // });
     }
   }
   Address.init(
@@ -32,8 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       long: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      userId: DataTypes.INTEGER,
+      }
     },
     {
       sequelize,

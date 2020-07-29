@@ -49,7 +49,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       userId: DataTypes.INTEGER,
       tierId: DataTypes.INTEGER,
-      addressId: DataTypes.INTEGER,
       roleId: DataTypes.INTEGER,
     },
     {
