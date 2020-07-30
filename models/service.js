@@ -2,6 +2,7 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Service extends Model {
+    //TODO Add a column for the service images
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -31,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       Service.hasOne(models.Job, {
         foreignKey: "serviceId",
       });
+
+      Service.hasOne(models.Address, {
+        foreignKey: "serviceId",
+      });
     }
   }
   Service.init(
@@ -51,20 +56,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      county: {
+      imageUrl: {
         type: DataTypes.STRING,
-        allowNull: false,
-      },
-      town: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      lat: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-      },
-      long: {
-        type: DataTypes.DOUBLE,
         allowNull: false,
       },
       userId: DataTypes.INTEGER,

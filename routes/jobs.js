@@ -42,7 +42,6 @@ router.get("/", (req, res) => {
   res.send("Invalid operation: Cannot get list of all jobs");
 });
 
-
 //! the only thing that will change is the status
 //! operation to only be performed by admin
 //* updates the data
@@ -61,16 +60,26 @@ router.put("/:id", (req, res) => {
 
 //delets a particular entry.
 router.delete("/:id", (req, res) => {
-    res.send("Invalid operation: Cannot delete a job");
+  res.send("Invalid operation: Cannot delete a job");
 });
 
 //TODO for testing purposes
 //* load jobs with their agent
-router.get('/user/:id', async(req, res) => {
-    const task = await Job.findAll({ include:  [User, Bid, Service, Status]});
+router.get("/users/:id", async (req, res) => {
+  const tasks = await Job.findAll({
+    include: [
+      { model: User, as: "client" },
+      { model: User, as: "agent" },
+      Bid,
+      Service,
+      Status,
+    ],
+    where: {
+      id: req.params.id
+    }
+  },);
 
-    res.send(task);
-
+  res.send(tasks);
 });
 
 module.exports = router;

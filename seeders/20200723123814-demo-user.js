@@ -1,22 +1,24 @@
 "use strict";
 
+const faker = require("faker");
+const { maxUsers } = require("../constants");
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert("Users", [
-      {
-        firstName: "John",
-        lastName: "Doe",
-        email: "example@example.com",
-        password: "totally_strong_password",
-        rememberToken: "thisIsARemToken",
-        apiToken: "abc123",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+    const users = [...Array(maxUsers)].map((user) => ({
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      email: faker.internet.email(),
+      password: faker.internet.password(8),
+      rememberToken: faker.lorem.words(), //
+      apiToken: faker.lorem.words(), //
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
+
+    return queryInterface.bulkInsert("Users", users);
   },
 
   down: async (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Users', null, {});
+    return queryInterface.bulkDelete("Users", null, {});
   },
 };

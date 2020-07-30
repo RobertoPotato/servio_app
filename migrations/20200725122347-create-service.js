@@ -9,30 +9,24 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       description: {
+        allowNull: false,
         type: Sequelize.TEXT,
       },
       budget: {
+        allowNull: false,
         type: Sequelize.DOUBLE,
       },
       terms: {
-        type: Sequelize.STRING,
-      },
-      county: {
-        type: Sequelize.STRING,
-      },
-      town: {
-        type: Sequelize.STRING,
-      },
-      lat: {
-        type: Sequelize.STRING,
         allowNull: false,
-      },
-      long: {
         type: Sequelize.STRING,
+      },
+      imageUrl: {
         allowNull: false,
+        type: Sequelize.STRING,
       },
       userId: {
         type: Sequelize.INTEGER,

@@ -11,12 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      //TODO Add the 'as' directive
+      //* 'as' directive added
       Job.belongsTo(models.User, {
+        as: "client",
         foreignKey: "clientId",
         onDelete: "CASCADE",
       });
 
       Job.belongsTo(models.User, {
+        as: "agent",
         foreignKey: "agentId",
         onDelete: "CASCADE",
       });

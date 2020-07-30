@@ -46,15 +46,15 @@ module.exports = {
           as: "tierId",
         },
       },
-      addressId: {
-        type: Sequelize.INTEGER,
-        onDelete: "CASCADE",
-        references: {
-          model: "Addresses",
-          key: "id",
-          as: "addressId",
-        },
-      },
+      // addressId: {
+      //   type: Sequelize.INTEGER,
+      //   onDelete: "CASCADE",
+      //   references: {
+      //     model: "Addresses",
+      //     key: "id",
+      //     as: "addressId",
+      //   },
+      // },
       roleId: {
         type: Sequelize.INTEGER,
         onDelete: "CASCADE",

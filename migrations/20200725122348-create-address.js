@@ -24,6 +24,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      serviceId: {
+        type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        references: {
+          model: "Services",
+          key: "id",
+          as: "serviceId",
+        },
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

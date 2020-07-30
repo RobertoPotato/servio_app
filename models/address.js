@@ -8,11 +8,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      // Address.hasOne(models.Profile, {
-      //   foreignKey: "userId",
-      //   onDelete: "CASCADE",
-      // });
+      Address.belongsTo(models.Service, {
+        foreignKey: "serviceId",
+        onDelete: "CASCADE",
+      });
     }
   }
   Address.init(
@@ -32,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
       long: {
         type: DataTypes.STRING,
         allowNull: false,
-      }
+      },
+      serviceId: DataTypes.INTEGER,
     },
     {
       sequelize,
@@ -41,3 +41,6 @@ module.exports = (sequelize, DataTypes) => {
   );
   return Address;
 };
+
+//TODO make email in user model unique
+//TODO make phone number in profile unique 
