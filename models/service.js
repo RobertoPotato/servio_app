@@ -48,7 +48,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      budget: {
+      budgetMin: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      budgetMax: {
         type: DataTypes.DOUBLE,
         allowNull: false,
       },

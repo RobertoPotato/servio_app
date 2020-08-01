@@ -1,11 +1,11 @@
 "use strict";
 
 const faker = require("faker");
-const { maxAddress, actualMin, maxServices } = require("../constants");
+const { maxAddresses, actualMin, maxServices } = require("../constants");
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
-    const addresses = [...Array(maxAddress)].map((address) => ({
+    const addresses = [...Array(maxAddresses)].map((address) => ({
       county: faker.address.state(),
       town: faker.address.county(),
       lat: faker.address.latitude(),

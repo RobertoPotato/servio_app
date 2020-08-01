@@ -63,7 +63,7 @@ router.delete("/:id", (req, res) => {
   res.send("Invalid operation: Cannot delete a job");
 });
 
-//TODO for testing purposes
+//TODO COMPOSITE: for testing purposes
 //* load jobs with their agent
 router.get("/users/:id", async (req, res) => {
   const tasks = await Job.findAll({

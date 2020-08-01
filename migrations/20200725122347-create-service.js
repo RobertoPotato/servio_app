@@ -16,7 +16,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT,
       },
-      budget: {
+      budgetMin: {
+        allowNull: false,
+        type: Sequelize.DOUBLE,
+      },
+      budgetMax: {
         allowNull: false,
         type: Sequelize.DOUBLE,
       },

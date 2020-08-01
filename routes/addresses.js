@@ -1,5 +1,5 @@
 const express = require("express");
-const { Address } = require("../models/index");
+const { Address, Service, User } = require("../models/index");
 
 // list of fillable fields
 // county
@@ -22,11 +22,12 @@ router.post("/", async (req, res) => {
 });
 
 //gets data on specific based on id
-router.get("/:id", async (req, res) => {
-  const address = await Address.findAll({
+router.get("/:serviceId", async (req, res) => {
+  const address = await Address.findOne({
     where: {
-      id: req.params.id,
+      serviceId: req.params.serviceId,
     },
+    include: Service,
   });
 
   res.send(address);

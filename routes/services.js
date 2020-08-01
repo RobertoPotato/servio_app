@@ -1,10 +1,11 @@
 const express = require("express");
-const { Service } = require("../models/index");
+const { Service, Address } = require("../models/index");
 
 // list of fillable fields
 // title
 // description
-// budget
+// budgetMin
+// budgetMax
 // terms
 // county
 // town
@@ -21,7 +22,8 @@ router.post("/", async (req, res) => {
   const service = await Service.create({
     title: req.body.title,
     description: req.body.description,
-    budget: req.body.budget,
+    budgetMin: req.body.budgetMin,
+    budgetMax: req.body.budgetMax,
     terms: req.body.terms,
     county: req.body.county,
     town: req.body.town,
@@ -35,53 +37,78 @@ router.post("/", async (req, res) => {
 });
 
 //gets data on specific based on id
-router.get("/:id", async(req, res) => {
-    const service = await Service.findAll({
-        where: {
-            id: req.params.id
-        }
-    });
+router.get("/:id", async (req, res) => {
+  const service = await Service.findAll({
+    where: {
+      id: req.params.id,
+    },
+  });
 
-    res.send(service);
+  res.send(service);
 });
 
 //gets all entries from db
-router.get("/", async(req, res) => {
-    const services = await Service.findAll();
+router.get("/", async (req, res) => {
+  const services = await Service.findAll();
 
-    res.send(services);
+  res.send(services);
+});
+
+//TODO get all products from a certain category id
+router.get("/fromcategory/:id", async (req, res) => {
+  const services = await Service.findAll({
+    where: {
+      categoryId: req.params.id,
+    },
+  });
+
+  res.status(200).send(services);
+});
+
+//TODO COMPOSITE: get a service with its address Test
+
+router.get("/address/:id", async (req, res) => {
+  const services = await Service.findAll({
+    where: {
+      id: req.params.id,
+    },
+    include: Address
+  });
+
+  res.status(200).send(services);
 });
 
 //updates the data
 router.put("/:id", (req, res) => {
-    Service.update(
-        {
-          title: req.body.title,
-          description: req.body.description,
-          budget: req.body.budget,
-          terms: req.body.terms,
-          county: req.body.county,
-          town: req.body.town,
-          lat: req.body.lat,
-          long: req.body.long,
-          userId: req.body.userId,
-          categoryId: req.body.categoryId,
-        },
-        {
-          where: {
-            id: req.params.id,
-          },
-        }
-      ).then(res.send("Service updated"));
+  Service.update(
+    {
+      title: req.body.title,
+      description: req.body.description,
+      budgetMin: req.body.budgetMin,
+      budgetMax: req.body.budgetMax,
+      terms: req.body.terms,
+      county: req.body.county,
+      town: req.body.town,
+      lat: req.body.lat,
+      long: req.body.long,
+      userId: req.body.userId,
+      categoryId: req.body.categoryId,
+    },
+    {
+      where: {
+        id: req.params.id,
+      },
+    }
+  ).then(res.send("Service updated"));
 });
 
 //delets a particular entry.
 router.delete("/:id", (req, res) => {
-    Service.destroy({
-        where: {
-            id: req.params.id
-        }
-    }).then(res.send("Service has been deleted successfully"));
+  Service.destroy({
+    where: {
+      id: req.params.id,
+    },
+  }).then(res.send("Service has been deleted successfully"));
 });
 
 module.exports = router;
