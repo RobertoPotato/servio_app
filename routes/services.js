@@ -70,7 +70,7 @@ router.get("/fromcategory/:id", async (req, res) => {
 router.get("/address/:id", async (req, res) => {
   const services = await Service.findAll({
     where: {
-      id: req.params.id,
+      categoryId: req.params.id,
     },
     include: Address
   });
@@ -112,3 +112,4 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router;
+//TODO fetch only services that are active and have an address to put to the category -> services page
