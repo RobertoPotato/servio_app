@@ -1,14 +1,5 @@
 const express = require("express");
-const { Bid } = require("../models/index");
-
-// list of fillable fields
-// amount
-// coverLetter
-// canTravel
-// availability
-// currency
-// userId
-// serviceId
+const { Bid, User } = require("../models/index");
 
 const router = express.Router();
 const testCurrency = "KES"; //! Remove this
@@ -27,13 +18,25 @@ router.post("/", async (req, res) => {
     currency: testCurrency,
   });
 
-  //! remove this
-  console.log(req.body);
-
   res.send(bid);
 });
 
-//TODO get all bids for a certain service
+//TODO get all bids for a certain service => Users can see bids made for a service theyve requested
+router.get('/formyservice/:serviceId', async(req, res) => {
+  const bids = await Bid.findAll({
+    where: {
+      serviceId: req.params.serviceId
+    },
+    include: [
+      {model: User, attributes: ['firstName', 'lastName']}
+    ]
+  });
+
+  res.send(bids);
+
+});
+
+
 //TODO user can see all the bids they've made and the associated service
 //gets data on specific based on id
 router.get("/:id", async (req, res) => {
@@ -45,10 +48,6 @@ router.get("/:id", async (req, res) => {
 
   res.send(bid);
 });
-
-//* Dont need to show all bids
-//gets all entries from db
-//router.get("/", (req, res) => {});
 
 //updates the data
 router.put("/:id", (req, res) => {

@@ -54,7 +54,19 @@ router.get("/", async (req, res) => {
   res.send(services);
 });
 
-//TODO get all products from a certain category id
+//TODO get all services for a particular user
+router.get('/foruser/:userId', async(req, res) => {
+  const services = await Service.findAll({
+    where: {
+      userId: req.params.userId
+    },
+  });
+
+  res.send(services);
+
+});
+
+//TODO get all services from a certain category id
 router.get("/fromcategory/:id", async (req, res) => {
   const services = await Service.findAll({
     where: {
