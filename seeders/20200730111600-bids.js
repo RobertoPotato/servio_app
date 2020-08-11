@@ -9,7 +9,7 @@ module.exports = {
       coverLetter: faker.lorem.paragraph(),
       canTravel: faker.random.boolean(),
       availability: faker.company.catchPhraseDescriptor(),
-      currency: faker.address.state(), //
+      currency: faker.finance.currencyCode(), //
       userId: faker.random.number({ min: actualMin, max: maxUsers }), //* generates fake whole numbers in given range
       serviceId: faker.random.number({ min: actualMin, max: maxServices }),
       createdAt: new Date(),

@@ -5,7 +5,7 @@ const { maxTiers } = require("../constants");
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const tiers = [...Array(maxTiers)].map((tier) => ({
-      title: faker.lorem.words(),
+      title: faker.lorem.word(),
       description: faker.lorem.sentences(),
       badgeUrl: faker.image.imageUrl(),
       createdAt: new Date(),
