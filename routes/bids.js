@@ -1,5 +1,5 @@
 const express = require("express");
-const { Bid, User } = require("../models/index");
+const { Bid, User, Service, Status } = require("../models/index");
 
 const router = express.Router();
 const testCurrency = "KES"; //! Remove this
@@ -22,28 +22,39 @@ router.post("/", async (req, res) => {
 });
 
 //TODO get all bids for a certain service => Users can see bids made for a service theyve requested
-router.get('/formyservice/:serviceId', async(req, res) => {
+router.get("/formyservice/:serviceId", async (req, res) => {
   const bids = await Bid.findAll({
     where: {
-      serviceId: req.params.serviceId
+      serviceId: req.params.serviceId,
     },
-    include: [
-      {model: User, attributes: ['firstName', 'lastName']}
-    ]
+    include: [{ model: User, attributes: ["firstName", "lastName"] }],
   });
 
   res.send(bids);
-
 });
-
 
 //TODO user can see all the bids they've made and the associated service
 //gets data on specific based on id
-router.get("/:id", async (req, res) => {
+router.get("/foruser/:userId", async (req, res) => {
   const bid = await Bid.findAll({
     where: {
-      id: req.params.id,
+      userId: req.params.userId,
     },
+    attributes: {
+      exclude: ["id", "userId", "serviceId", "createdAt"],
+    },
+    include: [
+      {
+        model: Service,
+        include: [
+          {
+            model: Status,
+            attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+          },
+        ],
+        attributes: { exclude: ["id", "userId", "categoryId", "createdAt", "statusId"] },
+      },
+    ],
   });
 
   res.send(bid);
