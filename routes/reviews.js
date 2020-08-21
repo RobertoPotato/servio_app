@@ -1,5 +1,5 @@
 const express = require("express");
-const { Review } = require("../models/index");
+const { Review, User } = require("../models/index");
 
 // list of fillable fields
 // stars
@@ -30,6 +30,18 @@ router.get("/:id", async (req, res) => {
   });
 
   res.send(review);
+});
+
+router.get('/foruser/:userid', async(req, res) => {
+  const reviews = await Review.findAll({
+    where: {
+      agentId: req.params.userid
+    },
+    attributes : ["stars", "content", "clientId", "createdAt"],
+    include: {model: User, attributes: ["firstName", "lastName"]},
+  });
+
+  res.send(reviews);
 });
 
 //* gets all entries from db
