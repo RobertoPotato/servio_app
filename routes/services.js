@@ -1,18 +1,6 @@
 const express = require("express");
 const { Service, Address } = require("../models/index");
-
-// list of fillable fields
-// title
-// description
-// budgetMin
-// budgetMax
-// terms
-// county
-// town
-// lat
-// long
-// userId
-// categoryId
+const multer = require("multer");
 //! statusId => not to be changed by the user
 
 const router = express.Router();
