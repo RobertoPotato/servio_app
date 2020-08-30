@@ -13,12 +13,10 @@ router.post("/", async (req, res) => {
     budgetMin: req.body.budgetMin,
     budgetMax: req.body.budgetMax,
     terms: req.body.terms,
-    county: req.body.county,
-    town: req.body.town,
-    lat: req.body.lat,
-    long: req.body.long,
+    imageUrl: req.body.imageUrl,
     userId: req.body.userId,
     categoryId: req.body.categoryId,
+    statusId: req.body.statusId
   });
 
   res.send(service);

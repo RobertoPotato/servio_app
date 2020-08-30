@@ -5,7 +5,7 @@
     "database": "servio-dev",
     "host": "127.0.0.1",
     "dialect": "postgres",
-    "port": 6000
+    "port": 5432
   },
   "test": {
     "username": "postgres",
@@ -13,7 +13,7 @@
     "database": "servio-test",
     "host": "127.0.0.1",
     "dialect": "postgres",
-    "port": 6000
+    "port": 5432
   },
   "production": {
     "username": "postgres",
@@ -21,6 +21,6 @@
     "database": "servio-prod",
     "host": "127.0.0.1",
     "dialect": "postgres",
-    "port": 6000
+    "port": 5432
   }
 }

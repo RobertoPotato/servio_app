@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
     currency: testCurrency,
   });
 
-  res.send(bid);
+  res.status(201).send(bid);
 });
 
 //TODO get all bids for a certain service => Users can see bids made for a service theyve requested
