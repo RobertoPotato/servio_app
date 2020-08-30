@@ -1,25 +1,35 @@
 const express = require("express");
 const { Service, Address } = require("../models/index");
 const multer = require("multer");
-//! statusId => not to be changed by the user
+var upload = multer({ dest: "uploads/" });
+var fs = require("fs");
 
 const router = express.Router();
 
 //creates a new entry
-router.post("/", async (req, res) => {
-  const service = await Service.create({
-    title: req.body.title,
-    description: req.body.description,
-    budgetMin: req.body.budgetMin,
-    budgetMax: req.body.budgetMax,
-    terms: req.body.terms,
-    imageUrl: req.body.imageUrl,
-    userId: req.body.userId,
-    categoryId: req.body.categoryId,
-    statusId: req.body.statusId
-  });
+router.post("/", upload.single("imageUrl"), async (req, res) => {
+  console.log("received file" + req.file.originalname);
+  var src = fs.createReadStream(req.file.path);
+  var dest = fs.createWriteStream("uploads/" + req.file.originalname);
 
-  res.send(service);
+  src.pipe(dest);
+  src.on("end", function () {
+    fs.unlinkSync(req.file.path);
+    const service = Service.create({
+      title: req.body.title,
+      description: req.body.description,
+      budgetMin: parseFloat(req.body.budgetMin),
+      budgetMax: parseFloat(req.body.budgetMax),
+      terms: req.body.terms,
+      imageUrl: req.file.originalname,
+      userId: parseInt(req.body.userId),
+      categoryId: parseInt(req.body.categoryId),
+      statusId: parseInt(req.body.statusId),
+    }).then((service)=>{res.send(service)});
+  });
+  src.on("error", function (err) {
+    res.json("Something went wrong!");
+  });
 });
 
 //gets data on specific based on id
@@ -41,15 +51,14 @@ router.get("/", async (req, res) => {
 });
 
 //TODO get all services for a particular user
-router.get('/foruser/:userId', async(req, res) => {
+router.get("/foruser/:userId", async (req, res) => {
   const services = await Service.findAll({
     where: {
-      userId: req.params.userId
+      userId: req.params.userId,
     },
   });
 
   res.send(services);
-
 });
 
 //TODO get all services from a certain category id
@@ -70,7 +79,7 @@ router.get("/address/:id", async (req, res) => {
     where: {
       categoryId: req.params.id,
     },
-    include: Address
+    include: Address,
   });
 
   res.status(200).send(services);
@@ -111,3 +120,5 @@ router.delete("/:id", (req, res) => {
 
 module.exports = router;
 //TODO fetch only services that are active and have an address to put to the category -> services page
+
+//! statusId => not to be changed by the user
