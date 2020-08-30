@@ -1,34 +1,39 @@
 const express = require("express");
+const router = express.Router();
 const { Service, Address } = require("../models/index");
 const multer = require("multer");
-var upload = multer({ dest: "uploads/" });
 var fs = require("fs");
+const { urlOrIp, port} = require("../constants")
 
-const router = express.Router();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, new Date().toISOString() + file.originalname);
+  },
+});
+
+var upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 20 },
+});
 
 //creates a new entry
-router.post("/", upload.single("imageUrl"), async (req, res) => {
-  console.log("received file" + req.file.originalname);
-  var src = fs.createReadStream(req.file.path);
-  var dest = fs.createWriteStream("uploads/" + req.file.originalname);
-
-  src.pipe(dest);
-  src.on("end", function () {
-    fs.unlinkSync(req.file.path);
-    const service = Service.create({
-      title: req.body.title,
-      description: req.body.description,
-      budgetMin: parseFloat(req.body.budgetMin),
-      budgetMax: parseFloat(req.body.budgetMax),
-      terms: req.body.terms,
-      imageUrl: req.file.originalname,
-      userId: parseInt(req.body.userId),
-      categoryId: parseInt(req.body.categoryId),
-      statusId: parseInt(req.body.statusId),
-    }).then((service)=>{res.send(service)});
-  });
-  src.on("error", function (err) {
-    res.json("Something went wrong!");
+router.post("/", upload.single("imageUrl"), async (req, res, next) => {
+  const service = Service.create({
+    title: req.body.title,
+    description: req.body.description,
+    budgetMin: parseFloat(req.body.budgetMin),
+    budgetMax: parseFloat(req.body.budgetMax),
+    terms: req.body.terms,
+    // Append server's details statically to the url being saved
+    imageUrl: `http://${urlOrIp}:${port}/` + req.file.path,
+    userId: parseInt(req.body.userId),
+    categoryId: parseInt(req.body.categoryId),
+    statusId: parseInt(req.body.statusId),
+  }).then((service) => {
+    res.send(service);
   });
 });
 

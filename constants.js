@@ -11,4 +11,6 @@ module.exports = {
   maxBids: 800,
   maxProfiles: 100,
   maxJobs: 100,
+  urlOrIp: '192.168.100.39',
+  port: 3000,
 };

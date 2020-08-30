@@ -22,6 +22,7 @@ app.get("/", async (req, res) => {
   res.send("Hello world.");
 });
 
+app.use('/uploads', express.static("uploads"));
 app.use("/api/v1/users", users);
 app.use("/api/v1/profiles", profiles);
 app.use("/api/v1/categories", categories);
