@@ -63,22 +63,32 @@ router.delete("/:id", (req, res) => {
   res.send("Invalid operation: Cannot delete a job");
 });
 
-
 //* load jobs of a particular client
 router.get("/forclient/:clientid", async (req, res) => {
   const tasks = await Job.findAll({
-    attributes: ['createdAt'],
+    attributes: ["createdAt", "clientId", "agentId"],
     include: [
-      { model: User, as: "client", attributes: ['firstName', 'lastName']},
-      { model: User, as: "agent", attributes: ['firstName', 'lastName']},
-      { model: Bid, attributes: {exclude: ['id', 'userId', 'serviceId', 'updatedAt']}},
-      { model: Service, attributes: {exclude: ['id', 'userId', 'categoryId', 'statusId', 'updatedAt']}},
-      { model: Status, attributes: {exclude: ['id', 'createdAt', 'updatedAt']}},
+      { model: User, as: "client", attributes: ["firstName", "lastName"] },
+      { model: User, as: "agent", attributes: ["firstName", "lastName"] },
+      {
+        model: Bid,
+        attributes: { exclude: ["id", "userId", "serviceId", "updatedAt"] },
+      },
+      {
+        model: Service,
+        attributes: {
+          exclude: ["id", "userId", "categoryId", "statusId", "updatedAt"],
+        },
+      },
+      {
+        model: Status,
+        attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+      },
     ],
     where: {
-      clientId: req.params.clientid
-    }
-  },);
+      clientId: req.params.clientid,
+    },
+  });
 
   res.send(tasks);
 });
@@ -86,18 +96,29 @@ router.get("/forclient/:clientid", async (req, res) => {
 //* load jobs of a particular agent
 router.get("/foragent/:agentid", async (req, res) => {
   const tasks = await Job.findAll({
-    attributes: ['createdAt'],
+    attributes: ["createdAt", "clientId", "agentId"],
     include: [
-      { model: User, as: "client", attributes: ['firstName', 'lastName']},
-      { model: User, as: "agent", attributes: ['firstName', 'lastName']},
-      { model: Bid, attributes: {exclude: ['id', 'userId', 'serviceId', 'updatedAt']}},
-      { model: Service, attributes: {exclude: ['id', 'userId', 'categoryId', 'statusId', 'updatedAt']}},
-      { model: Status, attributes: {exclude: ['id', 'createdAt', 'updatedAt']}},
+      { model: User, as: "client", attributes: ["firstName", "lastName"] },
+      { model: User, as: "agent", attributes: ["firstName", "lastName"] },
+      {
+        model: Bid,
+        attributes: { exclude: ["id", "userId", "serviceId", "updatedAt"] },
+      },
+      {
+        model: Service,
+        attributes: {
+          exclude: ["id", "userId", "categoryId", "statusId", "updatedAt"],
+        },
+      },
+      {
+        model: Status,
+        attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+      },
     ],
     where: {
-      agentId: req.params.agentid
-    }
-  },);
+      agentId: req.params.agentid,
+    },
+  });
 
   res.send(tasks);
 });
