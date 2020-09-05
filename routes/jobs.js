@@ -23,6 +23,35 @@ router.post("/", async (req, res) => {
   res.send(job);
 });
 
+//updates the data
+//? Marks job as done
+router.put("/:jobid/:agentid/done", (req, res) => {
+  Job.update(
+    {
+      statusId: req.body.statusId,
+    },
+    {
+      where: {
+        id: req.params.jobid,
+      },
+    }
+  ).then(res.status(200).send("Ok"));
+});
+
+//? Marks job as complete
+router.put("/:jobid/:clientid/complete", (req, res) => {
+  Job.update(
+    {
+      statusId: req.body.statusId,
+    },
+    {
+      where: {
+        id: req.params.jobid,
+      },
+    }
+  ).then(res.status(200).send("Ok"));
+});
+
 //gets data on specific based on id
 router.get("/:id", async (req, res) => {
   const job = await Job.findAll({
@@ -66,7 +95,7 @@ router.delete("/:id", (req, res) => {
 //* load jobs of a particular client
 router.get("/forclient/:clientid", async (req, res) => {
   const tasks = await Job.findAll({
-    attributes: ["createdAt", "clientId", "agentId"],
+    attributes: ["id", "createdAt", "clientId", "agentId"],
     include: [
       { model: User, as: "client", attributes: ["firstName", "lastName"] },
       { model: User, as: "agent", attributes: ["firstName", "lastName"] },
@@ -96,7 +125,7 @@ router.get("/forclient/:clientid", async (req, res) => {
 //* load jobs of a particular agent
 router.get("/foragent/:agentid", async (req, res) => {
   const tasks = await Job.findAll({
-    attributes: ["createdAt", "clientId", "agentId"],
+    attributes: ["id", "createdAt", "clientId", "agentId"],
     include: [
       { model: User, as: "client", attributes: ["firstName", "lastName"] },
       { model: User, as: "agent", attributes: ["firstName", "lastName"] },
