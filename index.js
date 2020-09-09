@@ -11,6 +11,7 @@ const tiers = require("./routes/tiers");
 const services = require("./routes/services");
 const bids = require("./routes/bids");
 const jobs = require("./routes/jobs");
+const alerts = require("./routes/alerts");
 
 app.use(express.json());
 
@@ -22,7 +23,7 @@ app.get("/", async (req, res) => {
   res.send("Hello world.");
 });
 
-app.use('/uploads', express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 app.use("/api/v1/users", users);
 app.use("/api/v1/profiles", profiles);
 app.use("/api/v1/categories", categories);
@@ -34,6 +35,7 @@ app.use("/api/v1/tiers", tiers);
 app.use("/api/v1/services", services);
 app.use("/api/v1/bids", bids);
 app.use("/api/v1/jobs", jobs);
+app.use("/api/v1/alerts", alerts);
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
