@@ -10,6 +10,10 @@ module.exports = {
       payload: faker.lorem.sentence(),
       createdFor: faker.random.number({ min: actualMin, max: maxUsers }),
       isSeen: false,
+      type:
+        faker.random.number({ min: actualMin, max: maxUsers }) % 2 === 0
+          ? "JOBS"
+          : "MY_SERVICES",
       createdAt: new Date(),
       updatedAt: new Date(),
     }));

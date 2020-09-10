@@ -24,7 +24,7 @@ router.get("/foruser/:userid", async (req, res) => {
     },
   });
 
-  res.send(alert);
+  res.status(200).send(alert);
 });
 
 //updates the data
@@ -36,9 +36,11 @@ router.put("/:id/seen", (req, res) => {
     {
       where: {
         id: req.params.id,
+        //Ensures you only change an alert that's yours
+        createdFor: req.body.userId,
       },
     }
-  ).then(res.send("Alert updated"));
+  ).then(res.status(200).send("Alert updated"));
 });
 
 //! delets a particular entry. Deletions will be handled automatically by the system 24 hours after item is marked as seen

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       payload: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       createdFor: {
@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       isSeen: {
         type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
     },
