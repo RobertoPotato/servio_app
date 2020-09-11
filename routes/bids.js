@@ -1,5 +1,6 @@
 const express = require("express");
 const { Bid, User, Service, Status } = require("../models/index");
+const { createAlert, bidsReceived } = require("../notifications");
 
 const router = express.Router();
 const testCurrency = "KES"; //! Remove this
@@ -13,10 +14,19 @@ router.post("/", async (req, res) => {
     canTravel: req.body.canTravel,
     availability: req.body.availability,
     currency: req.body.currency,
-    userId: req.body.userId,
+    userId: req.body.userId, //user who made the bid
     serviceId: req.body.serviceId,
     currency: testCurrency,
-  });
+  }).then(
+    console.log("crafting alert"),
+    createAlert(
+      1,
+      bidsReceived.title,
+      bidsReceived.payLoad,
+      1,
+      bidsReceived.type
+    )
+  );
 
   res.status(201).send(bid);
 });
@@ -52,7 +62,9 @@ router.get("/foruser/:userId", async (req, res) => {
             attributes: { exclude: ["id", "createdAt", "updatedAt"] },
           },
         ],
-        attributes: { exclude: ["id", "userId", "categoryId", "createdAt", "statusId"] },
+        attributes: {
+          exclude: ["id", "userId", "categoryId", "createdAt", "statusId"],
+        },
       },
     ],
   });

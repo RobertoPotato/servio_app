@@ -1,3 +1,5 @@
+const { Alert } = require("./models/index");
+
 class AlertData {
   constructor(title, payLoad, type) {
     this.title = title;
@@ -48,6 +50,18 @@ var leaveAgentReview = new AlertData(
   "REVIEW"
 );
 
+//creates a new entry
+function createAlert(userId, title, payload, createdFor, type) {
+  Alert.create({
+    createdBy: userId,
+    title: title,
+    payload: payload,
+    createdFor: createdFor,
+    type: type,
+    isSeen: false,
+  }).then(console.log("Alert created"));
+}
+
 module.exports = {
   jobStatusActive: jobActive,
   bidAccepted: bidAccepted,
@@ -56,4 +70,5 @@ module.exports = {
   jobClosed: jobClosed,
   leaveClientReview: leaveClientReview,
   leaveAgentReview: leaveAgentReview,
+  createAlert: createAlert,
 };

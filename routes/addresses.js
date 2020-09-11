@@ -16,6 +16,7 @@ router.post("/", async (req, res) => {
     town: req.body.town,
     lat: req.body.lat,
     long: req.body.long,
+    serviceId: req.body.serviceId,
   });
 
   res.send(address);

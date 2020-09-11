@@ -22,6 +22,11 @@ router.get("/foruser/:userid", async (req, res) => {
     where: {
       createdFor: req.params.userid,
     },
+    //Order in a way that new alerts appear first
+    order: [
+      ["isSeen", "ASC"],
+      ["createdAt", "ASC"],
+    ],
   });
 
   res.status(200).send(alert);
