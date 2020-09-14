@@ -9,8 +9,6 @@ module.exports = {
       lastName: faker.name.lastName(),
       email: faker.internet.email(),
       password: faker.internet.password(8),
-      rememberToken: faker.lorem.words(), //
-      apiToken: faker.lorem.words(), //
       createdAt: new Date(),
       updatedAt: new Date(),
     }));

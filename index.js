@@ -12,6 +12,7 @@ const services = require("./routes/services");
 const bids = require("./routes/bids");
 const jobs = require("./routes/jobs");
 const alerts = require("./routes/alerts");
+const auth = require("./routes/auth/auth");
 
 app.use(express.json());
 
@@ -36,6 +37,7 @@ app.use("/api/v1/services", services);
 app.use("/api/v1/bids", bids);
 app.use("/api/v1/jobs", jobs);
 app.use("/api/v1/alerts", alerts);
+app.use("/api/v1/auth", auth);
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);

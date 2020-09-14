@@ -19,16 +19,11 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
+        //TODO unique: true,
       },
       password: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      rememberToken: {
-        type: Sequelize.STRING,
-      },
-      apiToken: {
-        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

@@ -2,18 +2,10 @@ const express = require("express");
 const { User } = require("../models/index");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
-  const user = await User.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  res.send(user);
-});
+//!Creating the users in the auth routes
 
 //Update a database entry
-router.put("/:id", async (req, res) => {
+router.put("/me", async (req, res) => {
   const user = await User.update(
     {
       firstName: req.body.firstName,
@@ -26,7 +18,7 @@ router.put("/:id", async (req, res) => {
     }
   );
 
-  res.send('okay');
+  res.send("okay");
 });
 
 module.exports = router;

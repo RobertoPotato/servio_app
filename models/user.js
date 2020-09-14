@@ -24,9 +24,6 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Bid, {
         foreignKey: "userId",
       });
-
-
-
     }
   }
   User.init(
@@ -42,13 +39,12 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        //TODO unique: true,
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      rememberToken: DataTypes.STRING,
-      apiToken: DataTypes.STRING,
     },
     {
       sequelize,
