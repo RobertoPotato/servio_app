@@ -27,7 +27,7 @@ router.post("/register", async (req, res) => {
     password: await bcrypt.hash(req.body.password, salt),
   });
 
-  res.send(_.pick(user, ["firstName", "lastName", "email"]));
+  res.status(200).send(_.pick(user, ["firstName", "lastName", "email"]));
 });
 
 router.post("/login", async (req, res) => {
