@@ -1,20 +1,21 @@
+const auth = require("../middleware/auth");
 const express = require("express");
 const { Bid, User, Service, Status } = require("../models/index");
 const { createAlert, bidsReceived } = require("../notifications");
-
 const router = express.Router();
+
 const testCurrency = "KES"; //! Remove this
 //creates a new entry
 //? confirm that the user has not already posted a bid for the service
 //TODO Create new entry for currency
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   const bid = await Bid.create({
     amount: req.body.amount,
     coverLetter: req.body.coverLetter,
     canTravel: req.body.canTravel,
     availability: req.body.availability,
     currency: req.body.currency,
-    userId: req.body.userId, //user who made the bid
+    userId: req.user.userId, //user who made the bid
     serviceId: req.body.serviceId,
     currency: testCurrency,
   }).then(
@@ -32,7 +33,7 @@ router.post("/", async (req, res) => {
 });
 
 //TODO get all bids for a certain service => Users can see bids made for a service theyve requested
-router.get("/formyservice/:serviceId", async (req, res) => {
+router.get("/formyservice/:serviceId", auth, async (req, res) => {
   const bids = await Bid.findAll({
     where: {
       serviceId: req.params.serviceId,
@@ -45,10 +46,10 @@ router.get("/formyservice/:serviceId", async (req, res) => {
 
 //TODO user can see all the bids they've made and the associated service
 //gets data on specific based on id
-router.get("/foruser/:userId", async (req, res) => {
+router.get("/mine", auth, async (req, res) => {
   const bid = await Bid.findAll({
     where: {
-      userId: req.params.userId,
+      userId: req.user.userId,
     },
     attributes: {
       exclude: ["id", "userId", "serviceId", "createdAt"],

@@ -54,13 +54,6 @@ router.get("/:id", async (req, res) => {
   res.send(service);
 });
 
-//gets all entries from db
-router.get("/", async (req, res) => {
-  const services = await Service.findAll();
-
-  res.send(services);
-});
-
 //TODO get all services for a particular user
 router.get("/foruser/:userId", async (req, res) => {
   const services = await Service.findAll({

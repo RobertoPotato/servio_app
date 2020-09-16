@@ -1,6 +1,7 @@
 const express = require("express");
 const { User, Profile, Tier, Role } = require("../models/index");
 const router = express.Router();
+const auth = require("../middleware/auth");
 
 router.post("/", async (req, res) => {
   const profile = await Profile.create({
@@ -16,12 +17,28 @@ router.post("/", async (req, res) => {
   res.send(profile);
 });
 
-//TODO find the profile of a given user
+//TODO find Logged in user's profile
+router.get("/mine", auth, async (req, res) => {
+  const profiles = await Profile.findOne({
+    where: { userId: req.user.userId },
+    attributes: {
+      exclude: ["id", "userId", "tierId", "roleId", "createdAt"],
+    },
+    include: [
+      { model: Tier, attributes: ["title", "description", "badgeUrl"] },
+      { model: Role, attributes: ["title", "description"] },
+    ],
+  });
+
+  res.send(profiles);
+});
+
+//TODO find the profile of another user
 router.get("/:userid", async (req, res) => {
   const profiles = await Profile.findOne({
     where: { userId: req.params.userid },
     attributes: {
-      exclude: ['id', 'userId', 'tierId', 'roleId', 'createdAt']
+      exclude: ["id", "userId", "tierId", "roleId", "createdAt"],
     },
     include: [
       { model: Tier, attributes: ["title", "description", "badgeUrl"] },
