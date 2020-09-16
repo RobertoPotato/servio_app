@@ -3,7 +3,8 @@ const router = express.Router();
 const { Service, Address } = require("../models/index");
 const multer = require("multer");
 var fs = require("fs");
-const { urlOrIp, port} = require("../constants")
+const { urlOrIp, port } = require("../constants");
+const auth = require("../middleware/auth");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -20,21 +21,26 @@ var upload = multer({
 });
 
 //creates a new entry
-router.post("/", upload.single("imageUrl"), async (req, res, next) => {
-  const service = Service.create({
-    title: req.body.title,
-    description: req.body.description,
-    budgetMin: parseFloat(req.body.budgetMin),
-    budgetMax: parseFloat(req.body.budgetMax),
-    terms: req.body.terms,
-    // Append server's details statically to the url being saved
-    imageUrl: `http://${urlOrIp}:${port}/` + req.file.path,
-    userId: parseInt(req.body.userId),
-    categoryId: parseInt(req.body.categoryId),
-    statusId: parseInt(req.body.statusId),
-  }).then((service) => {
-    res.send(service);
-  });
+router.post("/", upload.single("imageUrl"), auth, async (req, res, next) => {
+  try {
+    const service = await Service.create({
+      title: req.body.title,
+      description: req.body.description,
+      budgetMin: parseFloat(req.body.budgetMin),
+      budgetMax: parseFloat(req.body.budgetMax),
+      terms: req.body.terms,
+      // Append server's details statically to the url being saved
+      imageUrl: `http://${urlOrIp}:${port}/` + req.file.path,
+      userId: req.user.userId, //getting this value from the auth middleware
+      categoryId: parseInt(req.body.categoryId),
+      statusId: parseInt(req.body.statusId),
+    });
+
+    res.status(200).send(service);
+  } catch (ex) {
+    console.log(ex.type + ex.message);
+    return res.status(501);
+  }
 });
 
 //gets data on specific based on id

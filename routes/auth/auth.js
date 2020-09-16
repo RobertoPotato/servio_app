@@ -4,6 +4,7 @@ const express = require("express");
 const { User } = require("../../models/index");
 var jwt = require("jsonwebtoken");
 
+//TODO Save key in env variable
 const KEY = "SaveInsideEnvironmentVariableForProduction";
 const router = express.Router();
 
