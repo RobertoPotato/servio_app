@@ -1,5 +1,6 @@
 const express = require("express");
 const { Job, User, Service, Status, Bid } = require("../models/index");
+const auth = require("../middleware/auth");
 
 // list of fillable fields
 // clientId
@@ -92,8 +93,37 @@ router.delete("/:id", (req, res) => {
   res.send("Invalid operation: Cannot delete a job");
 });
 
+router.get("/client/:id", auth, async (req, res) => {
+  const jobs = await Job.findAll({
+    attributes: ["id", "createdAt", "clientId", "agentId"],
+    include: [
+      { model: User, as: "client", attributes: ["firstName", "lastName"] },
+      { model: User, as: "agent", attributes: ["firstName", "lastName"] },
+      {
+        model: Bid,
+        attributes: { exclude: ["id", "userId", "serviceId", "updatedAt"] },
+      },
+      {
+        model: Service,
+        attributes: {
+          exclude: ["id", "userId", "categoryId", "statusId", "updatedAt"],
+        },
+      },
+      {
+        model: Status,
+        attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+      },
+    ],
+    where: {
+      clientId: req.user.userId,
+    },
+  });
+
+  res.send(jobs);
+});
+
 //* load jobs of a particular client
-router.get("/forclient/:clientid", async (req, res) => {
+router.get("/forclient", auth, async (req, res) => {
   const tasks = await Job.findAll({
     attributes: ["id", "createdAt", "clientId", "agentId"],
     include: [
@@ -115,7 +145,7 @@ router.get("/forclient/:clientid", async (req, res) => {
       },
     ],
     where: {
-      clientId: req.params.clientid,
+      clientId: req.user.userId,
     },
   });
 
@@ -123,8 +153,11 @@ router.get("/forclient/:clientid", async (req, res) => {
 });
 
 //* load jobs of a particular agent
-router.get("/foragent/:agentid", async (req, res) => {
+//! Ignore the smtn item in the url. It just works with that there and
+//! I dont know why it fails when its not there
+router.get("/foragent/:smtn", auth, async (req, res) => {
   const tasks = await Job.findAll({
+    where: { agentId: req.user.userId },
     attributes: ["id", "createdAt", "clientId", "agentId"],
     include: [
       { model: User, as: "client", attributes: ["firstName", "lastName"] },
@@ -144,11 +177,9 @@ router.get("/foragent/:agentid", async (req, res) => {
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
       },
     ],
-    where: {
-      agentId: req.params.agentid,
-    },
   });
 
   res.send(tasks);
 });
+
 module.exports = router;

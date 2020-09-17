@@ -45,9 +45,14 @@ router.get("/mine", auth, async (req, res) => {
   res.send(reviews);
 });
 
-//* gets all entries from db
-router.get("/", async (req, res) => {
-  const reviews = await Review.findAll();
+router.get("/foruser/:userId", auth, async (req, res) => {
+  const reviews = await Review.findAll({
+    where: {
+      agentId: req.params.userId,
+    },
+    attributes: ["stars", "content", "clientId", "createdAt"],
+    include: { model: User, attributes: ["firstName", "lastName"] },
+  });
 
   res.send(reviews);
 });

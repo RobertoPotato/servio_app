@@ -41,6 +41,7 @@ router.get("/formyservice/:serviceId", auth, async (req, res) => {
     include: [{ model: User, attributes: ["firstName", "lastName"] }],
   });
 
+  console.log(bids);
   res.send(bids);
 });
 

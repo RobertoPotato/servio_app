@@ -55,10 +55,10 @@ router.get("/:id", async (req, res) => {
 });
 
 //TODO get all services for a particular user
-router.get("/foruser/:userId", async (req, res) => {
+router.get("/foruser/:abcde", auth, async (req, res) => {
   const services = await Service.findAll({
     where: {
-      userId: req.params.userId,
+      userId: req.user.userId,
     },
   });
 
