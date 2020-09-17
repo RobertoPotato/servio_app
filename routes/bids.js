@@ -7,14 +7,13 @@ const router = express.Router();
 const testCurrency = "KES"; //! Remove this
 //creates a new entry
 //? confirm that the user has not already posted a bid for the service
-//TODO Create new entry for currency
 router.post("/", auth, async (req, res) => {
   const bid = await Bid.create({
     amount: req.body.amount,
     coverLetter: req.body.coverLetter,
     canTravel: req.body.canTravel,
     availability: req.body.availability,
-    currency: req.body.currency,
+    //TODO Uncomment => currency: req.body.currency,
     userId: req.user.userId, //user who made the bid
     serviceId: req.body.serviceId,
     currency: testCurrency,
