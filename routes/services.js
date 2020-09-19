@@ -5,6 +5,7 @@ const multer = require("multer");
 var fs = require("fs");
 const { urlOrIp, port } = require("../constants");
 const auth = require("../middleware/auth");
+const asyncMiddleware = require("../middleware/asyncMiddleware");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -21,8 +22,11 @@ var upload = multer({
 });
 
 //creates a new entry
-router.post("/", upload.single("imageUrl"), auth, async (req, res, next) => {
-  try {
+router.post(
+  "/",
+  upload.single("imageUrl"),
+  auth,
+  asyncMiddleware(async (req, res, next) => {
     const service = await Service.create({
       title: req.body.title,
       description: req.body.description,
@@ -37,92 +41,108 @@ router.post("/", upload.single("imageUrl"), auth, async (req, res, next) => {
     });
 
     res.status(200).send(service);
-  } catch (ex) {
-    console.log(ex.type + ex.message);
-    return res.status(501);
-  }
-});
+  })
+);
 
 //gets data on specific based on id
-router.get("/:id", async (req, res) => {
-  const service = await Service.findAll({
-    where: {
-      id: req.params.id,
-    },
-  });
-
-  res.send(service);
-});
-
-//TODO get all services for a particular user
-router.get("/foruser/:abcde", auth, async (req, res) => {
-  const services = await Service.findAll({
-    where: {
-      userId: req.user.userId,
-    },
-  });
-
-  res.send(services);
-});
-
-//TODO get all services from a certain category id
-router.get("/fromcategory/:id", async (req, res) => {
-  const services = await Service.findAll({
-    where: {
-      categoryId: req.params.id,
-    },
-  });
-
-  res.status(200).send(services);
-});
-
-//TODO COMPOSITE: get a service with its address Test
-
-router.get("/address/:id", async (req, res) => {
-  const services = await Service.findAll({
-    where: {
-      categoryId: req.params.id,
-    },
-    include: Address,
-  });
-
-  res.status(200).send(services);
-});
-
-//updates the data
-router.put("/:id", (req, res) => {
-  Service.update(
-    {
-      title: req.body.title,
-      description: req.body.description,
-      budgetMin: req.body.budgetMin,
-      budgetMax: req.body.budgetMax,
-      terms: req.body.terms,
-      county: req.body.county,
-      town: req.body.town,
-      lat: req.body.lat,
-      long: req.body.long,
-      userId: req.body.userId,
-      categoryId: req.body.categoryId,
-    },
-    {
+router.get(
+  "/:id",
+  asyncMiddleware(async (req, res) => {
+    const service = await Service.findAll({
       where: {
         id: req.params.id,
       },
-    }
-  ).then(res.send("Service updated"));
-});
+    });
+
+    res.send(service);
+  })
+);
+
+// get all services for a particular user
+router.get(
+  "/foruser/:abcde",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const services = await Service.findAll({
+      where: {
+        userId: req.user.userId,
+      },
+    });
+
+    res.send(services);
+  })
+);
+
+// get all services from a certain category id
+router.get(
+  "/fromcategory/:id",
+  asyncMiddleware(async (req, res) => {
+    const services = await Service.findAll({
+      where: {
+        categoryId: req.params.id,
+        //TODO statusId: "active" status id
+      },
+    });
+
+    res.status(200).send(services);
+  })
+);
+
+router.get(
+  "/address/:id",
+  asyncMiddleware(async (req, res) => {
+    const services = await Service.findAll({
+      where: {
+        categoryId: req.params.id,
+      },
+      include: Address,
+    });
+
+    res.status(200).send(services);
+  })
+);
+
+//updates the data
+router.put(
+  "/:serviceId",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    Service.update(
+      {
+        title: req.body.title,
+        description: req.body.description,
+        budgetMin: req.body.budgetMin,
+        budgetMax: req.body.budgetMax,
+        terms: req.body.terms,
+        county: req.body.county,
+        town: req.body.town,
+        lat: req.body.lat,
+        long: req.body.long,
+        categoryId: req.body.categoryId,
+      },
+      {
+        where: {
+          id: req.params.serviceId,
+          userId: req.user.userId,
+        },
+      }
+    ).then(res.send("Service updated"));
+  })
+);
 
 //delets a particular entry.
-router.delete("/:id", (req, res) => {
-  Service.destroy({
-    where: {
-      id: req.params.id,
-    },
-  }).then(res.send("Service has been deleted successfully"));
-});
+//TODO Delete only when there are no actively running jobs or bids for the service
+router.delete(
+  "/:id",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    Service.destroy({
+      where: {
+        id: req.params.id,
+        userId: req.user.userId,
+      },
+    }).then(res.send("Service has been deleted successfully"));
+  })
+);
 
 module.exports = router;
-//TODO fetch only services that are active and have an address to put to the category -> services page
-
-//! statusId => not to be changed by the user
