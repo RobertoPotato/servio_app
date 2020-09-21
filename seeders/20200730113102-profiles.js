@@ -14,7 +14,6 @@ module.exports = {
     const profiles = [...Array(maxProfiles)].map((profile) => ({
       bio: faker.lorem.paragraph(),
       picture: faker.image.imageUrl(),
-      avatar: faker.image.avatar(),
       phoneNumber: faker.phone.phoneNumber(),
       isVerified: faker.random.boolean(), //
       userId: faker.random.number({ min: actualMin, max: maxUsers }), //* generates fake whole numbers in given range

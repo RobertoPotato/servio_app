@@ -16,10 +16,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      avatar: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       phoneNumber: {
         type: Sequelize.STRING,
         allowNull: false,
