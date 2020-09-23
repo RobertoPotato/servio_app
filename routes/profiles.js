@@ -45,7 +45,7 @@ router.post(
 
 //find Logged in user's profile
 router.get(
-  "/mine",
+  "/",
   auth,
   asyncMiddleware(async (req, res) => {
     const profiles = await Profile.findOne({

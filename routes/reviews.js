@@ -37,7 +37,7 @@ router.get(
 );
 
 router.get(
-  "/mine",
+  "/",
   auth,
   asyncMiddleware(async (req, res) => {
     const reviews = await Review.findAll({
