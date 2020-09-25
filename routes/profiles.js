@@ -79,7 +79,6 @@ router.get(
 // find the profile of another user
 router.get(
   "/:userid",
-  auth,
   asyncMiddleware(async (req, res) => {
     const profiles = await Profile.findOne({
       where: { userId: req.params.userid },

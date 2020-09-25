@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { Service, Address } = require("../models/index");
+const { Service, User } = require("../models/index");
 const multer = require("multer");
-var fs = require("fs");
-const { urlOrIp, port } = require("../constants");
 const auth = require("../middleware/auth");
 const asyncMiddleware = require("../middleware/asyncMiddleware");
 
@@ -77,27 +75,14 @@ router.get(
 
 // get all services from a certain category id
 router.get(
-  "/fromcategory/:id",
+  "/category/:id",
   asyncMiddleware(async (req, res) => {
     const services = await Service.findAll({
       where: {
         categoryId: req.params.id,
         //TODO statusId: "active" status id
       },
-    });
-
-    res.status(200).send(services);
-  })
-);
-
-//FIXME
-router.get(
-  "/category/:id",
-  asyncMiddleware(async (req, res) => {
-    const services = await Service.findAll({
-      where: {
-        categoryId: req.params.id,
-      },
+      include: { model: User, attributes: ["firstName", "lastName"] },
     });
 
     res.status(200).send(services);
