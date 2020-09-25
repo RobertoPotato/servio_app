@@ -32,6 +32,14 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
+      county: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+      town: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
       userId: {
         type: Sequelize.INTEGER,
         onDelete: "CASCADE",

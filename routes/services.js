@@ -34,10 +34,12 @@ router.post(
       budgetMax: parseFloat(req.body.budgetMax),
       terms: req.body.terms,
       // Append server's details statically to the url being saved
-      imageUrl: `http://${urlOrIp}:${port}/` + req.file.path,
+      imageUrl: req.file.path,
       userId: req.user.userId, //getting this value from the auth middleware
       categoryId: parseInt(req.body.categoryId),
       statusId: parseInt(req.body.statusId),
+      county: req.body.county,
+      town: req.body.town,
     });
 
     res.status(200).send(service);
@@ -88,14 +90,14 @@ router.get(
   })
 );
 
+//FIXME
 router.get(
-  "/address/:id",
+  "/category/:id",
   asyncMiddleware(async (req, res) => {
     const services = await Service.findAll({
       where: {
         categoryId: req.params.id,
       },
-      include: Address,
     });
 
     res.status(200).send(services);

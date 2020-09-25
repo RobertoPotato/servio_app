@@ -19,6 +19,8 @@ module.exports = {
       budgetMax: faker.finance.amount(),
       terms: faker.company.catchPhraseDescriptor(),
       imageUrl: faker.image.imageUrl(),
+      county: faker.address.county(),
+      town: faker.address.city(),
       userId: faker.random.number({ min: actualMin, max: maxUsers }), //* generates fake whole numbers in given range
       categoryId: faker.random.number({ min: actualMin, max: maxCategories }), //
       statusId: faker.random.number({ min: actualMin, max: maxStatuses }),

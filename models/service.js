@@ -32,10 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       Service.hasOne(models.Job, {
         foreignKey: "serviceId",
       });
-
-      Service.hasOne(models.Address, {
-        foreignKey: "serviceId",
-      });
+      //!Removed address association
     }
   }
   Service.init(
@@ -61,6 +58,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      county: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      town: {
         type: DataTypes.STRING,
         allowNull: false,
       },

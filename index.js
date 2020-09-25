@@ -3,7 +3,6 @@ const app = express(); //create the app object
 const users = require("./routes/users");
 const profiles = require("./routes/profiles");
 const categories = require("./routes/categories");
-const addresses = require("./routes/addresses");
 const roles = require("./routes/roles");
 const statuses = require("./routes/statuses");
 const reviews = require("./routes/reviews");
@@ -28,7 +27,6 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/v1/users", users);
 app.use("/api/v1/profiles", profiles);
 app.use("/api/v1/categories", categories);
-app.use("/api/v1/addresses", addresses);
 app.use("/api/v1/roles", roles);
 app.use("/api/v1/statuses", statuses);
 app.use("/api/v1/reviews", reviews);
