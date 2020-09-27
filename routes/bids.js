@@ -12,43 +12,72 @@ router.post(
   "/",
   auth,
   asyncMiddleware(async (req, res) => {
-    const service = await Service.findOne({
+    //Confirm the service exists If not end this request
+    var service = await Service.findOne({
       where: {
         id: req.body.serviceId,
       },
     });
 
-    if (service == null || service == "") return res.status(401);
+    if (service == null)
+      return res.status(400).send({ error: "The service no longer exists" });
 
+    //If the service belongs to user making the bid, end request
+    if (service.userId == req.user.userId)
+      return res.status(400).send({ error: "Can't bid for your own service" });
+
+    //If the user has already placed a bid, end request
+    const bidExists = await Bid.findAll({
+      where: {
+        serviceId: req.body.serviceId,
+        userId: req.user.userId,
+      },
+    });
+    console.log(bidExists);
+
+    if (bidExists.length != 0)
+      return res.status(400).send({ error: "You already made a bid for this" });
+
+    //Otherwise, create the bid
     const bid = await Bid.create({
       amount: req.body.amount,
       coverLetter: req.body.coverLetter,
       canTravel: req.body.canTravel,
       availability: req.body.availability,
-      userId: req.user.userId, //user who made the bid
+      userId: req.user.userId,
       serviceId: req.body.serviceId,
       currency: defaultCurrency,
-    }).then(
-      console.log("crafting alert"),
-      createAlert(
-        1,
-        bidsReceived.title,
-        bidsReceived.payLoad,
-        1,
-        bidsReceived.type
-      )
-    );
+    });
+
+    console.log(req.user.userId);
 
     res.status(201).send(bid);
   })
 );
 
 //get all bids for a certain service => Users can see bids made for a service theyve requested
-//TODO allow only the creator of the service to view the bids
 router.get(
   "/formyservice/:serviceId",
   auth,
   asyncMiddleware(async (req, res) => {
+    //check for service
+    const service = await Service.findOne({
+      where: {
+        id: req.params.serviceId,
+      },
+    });
+
+    //If service doesn't exist, end request
+    if (service == null)
+      return res.status(400).send({ error: "Nothing to show" });
+
+    //If service doesn't belong to the logged-in user, end request
+    if (service.userId != req.user.userId) {
+      return res
+        .status(401)
+        .send({ error: "You have no permission to view this resource" });
+    }
+
     const bids = await Bid.findAll({
       where: {
         serviceId: req.params.serviceId,
@@ -56,8 +85,7 @@ router.get(
       include: [{ model: User, attributes: ["firstName", "lastName"] }],
     });
 
-    console.log(bids);
-    res.send(bids);
+    res.status(200).send(bids);
   })
 );
 
@@ -131,5 +159,19 @@ router.delete(
     res.send("Successfully deleted");
   })
 );
+
+//TODO Alert creation example
+/**
+ * then(
+      console.log("crafting alert"),
+      createAlert(
+        1,
+        bidsReceived.title,
+        bidsReceived.payLoad,
+        1,
+        bidsReceived.type
+      )
+    );
+ */
 
 module.exports = router;
