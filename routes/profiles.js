@@ -77,7 +77,6 @@ router.get(
         .status(404)
         .send({ error: "No profile yet. You should set it up once logged in" });
 
-    console.log("Validate run and found " + profile.bio);
     res.status(200).send("OK");
   })
 );
