@@ -16,25 +16,25 @@ var jobActive = new AlertData(
 
 var bidAccepted = new AlertData(
   "Congratulations, your bid was accepted!",
-  "You have just been hired! Proceed to the jobs page for more details",
+  " hired you for the service: ",
   "JOBS"
 );
 
 var bidsReceived = new AlertData(
-  "You have a new bid",
-  "A user has just left a bid on one of your services",
+  "New bid for: ",
+  " has just left a bid on one of your services",
   "MY_SERVICES"
 );
 
 var jobComplete = new AlertData(
   "Job completed.",
-  "Your agent has marked one of your jobs completed. You can check this and respond in the jobs page",
+  " has marked one of your jobs completed. You can check this and respond in the jobs page",
   "JOBS"
 );
 
-var jobClosed = new AlertData(
-  "Job closed.",
-  "Your client has marked one of your jobs closed. You may review the client in the jobs page",
+var jobDone = new AlertData(
+  "Job done.",
+  " has marked one of your jobs done. You may review the client in the jobs page",
   "JOBS"
 );
 
@@ -67,7 +67,7 @@ module.exports = {
   bidAccepted: bidAccepted,
   bidsReceived: bidsReceived,
   jobComplete: jobComplete,
-  jobClosed: jobClosed,
+  jobDone: jobDone,
   leaveClientReview: leaveClientReview,
   leaveAgentReview: leaveAgentReview,
   createAlert: createAlert,

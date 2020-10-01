@@ -2,6 +2,12 @@ const express = require("express");
 const { Job, User, Service, Status, Bid } = require("../models/index");
 const auth = require("../middleware/auth");
 const asyncMiddleware = require("../middleware/asyncMiddleware");
+const {
+  jobDone,
+  jobComplete,
+  bidAccepted,
+  createAlert,
+} = require("./../notifications");
 
 const router = express.Router();
 
@@ -10,6 +16,26 @@ router.post(
   "/",
   auth,
   asyncMiddleware(async (req, res) => {
+    var service = await Service.findOne({
+      where: {
+        id: req.body.serviceId,
+      },
+    });
+
+    //end request if service can no longer be assigned to someone new
+    if (service == null)
+      return res.status(400).send({
+        error:
+          "That service is not taking any new bids. It might be assigned to someone else already.",
+      });
+
+    //end request if service doesnt belong to logged in user
+    if (service.userId != req.user.userId)
+      return res.status(400).send({
+        error:
+          "No permission. Please log in again and if the problem persists contact support.",
+      });
+
     const job = await Job.create({
       clientId: req.user.userId,
       agentId: req.body.agentId,
@@ -17,6 +43,18 @@ router.post(
       serviceId: req.body.serviceId,
       statusId: req.body.statusId,
     });
+
+    var alert = await createAlert(
+      req.user.userId,
+      bidAccepted.title,
+      req.user.firstName +
+        " " +
+        req.user.lastName +
+        bidAccepted.payLoad +
+        service.title,
+      req.body.agentId,
+      bidAccepted.type
+    );
 
     res.send(job);
   })
@@ -28,7 +66,24 @@ router.put(
   "/:jobid/done",
   auth,
   asyncMiddleware(async (req, res) => {
-    Job.update(
+    const job = await Job.findOne({
+      where: {
+        id: req.params.jobid,
+        agentId: req.user.userId,
+      },
+    });
+
+    //end request if the job being changed doesn't exist
+    if (job == null)
+      return res.status(400).send({ error: "The resource is not available" });
+
+    //end request if status has already been changed as needed
+    if (job.statusId == req.body.statusId)
+      return res
+        .status(400)
+        .send({ error: "You already marked this job done" });
+
+    const updated = await Job.update(
       {
         statusId: req.body.statusId,
       },
@@ -38,7 +93,21 @@ router.put(
           agentId: req.user.userId,
         },
       }
-    ).then(res.status(200).send("Ok"));
+    );
+
+    createAlert(
+      req.user.userId,
+      jobDone.title,
+      "Your agent, " +
+        req.user.firstName +
+        " " +
+        req.user.lastName +
+        jobDone.payLoad,
+      job.clientId,
+      jobDone.type
+    );
+
+    res.status(200).send("Job done");
   })
 );
 
@@ -47,7 +116,25 @@ router.put(
   "/:jobid/complete",
   auth,
   asyncMiddleware(async (req, res) => {
-    Job.update(
+    const job = await Job.findOne({
+      where: {
+        id: req.params.jobid,
+        clientId: req.user.userId,
+      },
+    });
+
+    //end request if the job being changed doesn't exist
+    if (job == null)
+      return res.status(400).send({ error: "The resource is not available" });
+
+    //end request if status has already been changed as needed
+    if (job.statusId == req.body.statusId)
+      return res
+        .status(400)
+        .send({ error: "You already marked this job completed" });
+
+    //Otherwise, update as needed
+    const updated = await Job.update(
       {
         statusId: req.body.statusId,
       },
@@ -57,7 +144,21 @@ router.put(
           clientId: req.user.userId,
         },
       }
-    ).then(res.status(200).send("Ok"));
+    );
+
+    createAlert(
+      req.user.userId,
+      jobComplete.title,
+      "Your client, " +
+        req.user.firstName +
+        " " +
+        req.user.lastName +
+        jobComplete.payLoad,
+      job.agentId,
+      jobComplete.type
+    );
+
+    res.status(200).send("Job completed");
   })
 );
 
@@ -67,13 +168,18 @@ router.get(
   "/:id",
   auth,
   asyncMiddleware(async (req, res) => {
-    const job = await Job.findAll({
+    const job = await Job.findOne({
       where: {
         id: req.params.id,
       },
     });
 
-    res.send(job);
+    if (job.clientId != req.user.userId || job.agentId != req.user.userId)
+      return res
+        .status(400)
+        .send({ error: "You lack permissions to view this resource" });
+
+    res.status(200).send(job);
   })
 );
 

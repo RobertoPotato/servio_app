@@ -33,7 +33,6 @@ router.post(
         userId: req.user.userId,
       },
     });
-    console.log(bidExists);
 
     if (bidExists.length != 0)
       return res.status(400).send({ error: "You already made a bid for this" });
@@ -49,9 +48,15 @@ router.post(
       currency: defaultCurrency,
     });
 
-    console.log(req.user.userId);
+    var alert = await createAlert(
+      req.user.userId,
+      bidsReceived.title + service.title,
+      req.user.firstName + " " + req.user.lastName + bidsReceived.payLoad,
+      service.userId,
+      bidsReceived.type
+    );
 
-    res.status(201).send(bid);
+    res.status(200).send({ bid });
   })
 );
 

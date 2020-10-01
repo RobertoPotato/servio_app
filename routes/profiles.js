@@ -59,7 +59,7 @@ router.get(
       ],
     });
 
-    res.send(profiles);
+    res.status(200).send(profiles);
   })
 );
 
@@ -68,11 +68,17 @@ router.get(
   "/validate",
   auth,
   asyncMiddleware(async (req, res) => {
-    const profiles = await Profile.findOne({
+    const profile = await Profile.findOne({
       where: { userId: req.user.userId },
     });
 
-    res.status(200);
+    if (profile == null)
+      return res
+        .status(404)
+        .send({ error: "No profile yet. You should set it up once logged in" });
+
+    console.log("Validate run and found " + profile.bio);
+    res.status(200).send("OK");
   })
 );
 
