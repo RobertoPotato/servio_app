@@ -26,16 +26,23 @@ router.post(
   upload.single("picture"),
   auth,
   asyncMiddleware(async (req, res, next) => {
-    console.log(req.file);
+    var profileInfo = await Profile.findOne({
+      where: { userId: parseInt(req.user.userId) },
+    });
+
+    //If the user has already set up their profile, end the request
+    if (profileInfo != null)
+      return res.status(409).send({
+        error: "There's already a profile associated with this account",
+      });
+
     const profile = await Profile.create({
       bio: req.body.bio,
       phoneNumber: req.body.phoneNumber,
       userId: parseInt(req.user.userId),
       isVerified: false,
       tierId: 1,
-      // Append server's details statically to the url being saved
       picture: req.file.path,
-      addressId: 1,
       roleId: 1,
     });
 

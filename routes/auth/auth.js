@@ -18,7 +18,10 @@ router.post("/register", async (req, res) => {
 
   //Stop registration if user exists
   if (checkForUser.length != 0) {
-    return res.status(400).send("User already registered");
+    return res.status(400).send({
+      error:
+        "This email address is associated with another account. If that's you please log in instead",
+    });
   }
   const salt = await bcrypt.genSalt(10);
   const user = await User.create({
@@ -38,6 +41,11 @@ router.post("/login", async (req, res) => {
       email: req.body.email,
     },
   });
+
+  if (user == null)
+    return res
+      .status(404)
+      .send({ error: "Account not found. Please register first" });
 
   if (user != null) {
     //If user does exist...
@@ -68,10 +76,10 @@ router.post("/login", async (req, res) => {
     }
     //If the user doesn't exist in the db
     else {
-      res.status(400).send("Invalid email or password");
+      res.status(400).send({ error: "Invalid email or password" });
     }
   } else {
-    return res.status(400).send("Invalid email or password");
+    return res.status(400).send({ error: "Invalid email or password" });
   }
 });
 
