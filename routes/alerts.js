@@ -70,13 +70,22 @@ router.put(
 
 //TODO delets a particular entry.
 //! Deletions will be handled automatically by the system 24 hours after item is marked as seen
-/*router.delete("/:id", (req, res) => {
+router.delete("/", async (req, res) => {
+  //if the user has an admin's jwt
+  //fetch the alerts
+  alerts = await Alert.findAll({
+    where: {
+      isSeen: true,
+    },
+  });
+
+  if (!alerts.length > 0) return res.status(200).send("No alerts to delete");
+
   Alert.destroy({
     where: {
-      id: req.params.id,
+      isSeen: true,
     },
-  }).then(res.send("Alert has been deleted"));
+  }).then(res.send(`${alerts.length} Alerts have been deleted`));
 });
-*/
 
 module.exports = router;
