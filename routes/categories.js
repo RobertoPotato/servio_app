@@ -24,21 +24,43 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const categories = await Category.findAll({
       attributes: {
-        include: [
-          [Sequelize.fn("COUNT", Sequelize.col("Services.id")), "serviceCount"],
-        ],
         exclude: ["createdAt", "updatedAt"],
       },
-      include: [
-        {
-          model: Service,
-          attributes: [],
-        },
-      ],
-      group: ["Category.id"],
     });
 
     res.send(categories);
+  })
+);
+
+router.get(
+  "/count/:id",
+  asyncMiddleware(async (req, res) => {
+    var count = await Service.count({
+      distinct: "id",
+      where: {
+        categoryId: req.params.id,
+      },
+    });
+
+    res.send({ count });
+  })
+);
+
+//get number of services in a given category
+router.get(
+  "/servicecount/:categoryid",
+  asyncMiddleware(async (req, res) => {
+    var count = await Service.count({
+      distinct: "id",
+      where: {
+        categoryId: req.params.categoryid,
+      },
+    });
+
+    //if (count == 0) return res.status(204).send({ error: "0" });
+
+    console.log(count + " services for category " + req.params.categoryid);
+    res.status(200).send({ count });
   })
 );
 
@@ -101,4 +123,28 @@ router.get(
   })
 );
 */
+
+/*
+router.get(
+  "/",
+  asyncMiddleware(async (req, res) => {
+    const categories = await Category.findAll({
+      attributes: {
+        include: [
+          [Sequelize.fn("COUNT", Sequelize.col("Services.id")), "serviceCount"],
+        ],
+        exclude: ["createdAt", "updatedAt"],
+      },
+      include: [
+        {
+          model: Service,
+          attributes: [],
+        },
+      ],
+      group: ["Category.id"],
+    });
+
+    res.send(categories);
+  })
+); */
 module.exports = router;
