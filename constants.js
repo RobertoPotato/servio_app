@@ -4,7 +4,7 @@ module.exports = {
   maxCategories: 20,
   maxAddresses: 200,
   maxRoles: 3,
-  maxStatuses: 5,
+  maxStatuses: 9,
   maxReviews: 200,
   maxTiers: 3,
   maxServices: 200,

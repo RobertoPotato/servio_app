@@ -16,6 +16,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      subCategories: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
       imageUrl: {
         type: Sequelize.STRING,
         allowNull: false,

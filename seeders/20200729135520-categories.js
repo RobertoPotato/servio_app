@@ -1,11 +1,12 @@
 "use strict";
 const faker = require("faker");
-const { maxCategories } = require("../constants")
+const { maxCategories } = require("../constants");
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const categories = [...Array(maxCategories)].map((category) => ({
       title: faker.commerce.department(),
       description: faker.lorem.sentences(),
+      subCategories: faker.lorem.sentences(),
       imageUrl: faker.image.imageUrl(),
       themeColor: faker.internet.color(),
       createdAt: new Date(),
