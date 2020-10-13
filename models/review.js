@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Review.belongsTo(models.User, {
-        foreignKey: "clientId",
+        foreignKey: "reviewerId",
         onDelete: "CASCADE",
       });
     }
@@ -20,11 +20,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      agentId: {
+      reviewerId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      clientId: {
+      subjectId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      jobId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

@@ -16,11 +16,15 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      agentId: {
+      jobId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      clientId: {
+      subjectId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      reviewerId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         onDelete: "CASCADE",

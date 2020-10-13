@@ -1,10 +1,14 @@
 const express = require("express");
-const { Review, User } = require("../models/index");
+const { Review, User, Job } = require("../models/index");
 const auth = require("../middleware/auth");
 const asyncMiddleware = require("../middleware/asyncMiddleware");
+const { JOB_COMPLETED } = require("../statusCodes");
 
 const router = express.Router();
+//end request if job isnt marked complete
 
+//get the agent's or client's ID based on value from isClient
+//console.log("Fetching review for a job of id: " + req.params.jobid);
 //* creates a new entry
 router.post(
   "/",
@@ -13,11 +17,28 @@ router.post(
     const review = await Review.create({
       stars: req.body.stars,
       content: req.body.content,
-      agentId: req.body.agentId,
-      clientId: req.body.clientId,
+      subjectId: req.body.agentId,
+      reviewerId: req.body.clientId,
+      jobId: req.body.jobId,
     });
 
     res.send(review);
+  })
+);
+
+router.get(
+  "/foruser/:userId",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const reviews = await Review.findAll({
+      where: {
+        subjectId: req.params.userId,
+      },
+      attributes: ["stars", "content", "updatedAt"],
+      include: { model: User, attributes: ["firstName", "lastName"] },
+    });
+
+    res.send(reviews);
   })
 );
 
@@ -33,38 +54,6 @@ router.get(
     });
 
     res.send(review);
-  })
-);
-
-router.get(
-  "/",
-  auth,
-  asyncMiddleware(async (req, res) => {
-    const reviews = await Review.findAll({
-      where: {
-        agentId: req.user.userId,
-      },
-      attributes: ["stars", "content", "clientId", "createdAt"],
-      include: { model: User, attributes: ["firstName", "lastName"] },
-    });
-
-    res.send(reviews);
-  })
-);
-
-router.get(
-  "/foruser/:userId",
-  auth,
-  asyncMiddleware(async (req, res) => {
-    const reviews = await Review.findAll({
-      where: {
-        agentId: req.params.userId,
-      },
-      attributes: ["stars", "content", "clientId", "createdAt"],
-      include: { model: User, attributes: ["firstName", "lastName"] },
-    });
-
-    res.send(reviews);
   })
 );
 
@@ -88,18 +77,55 @@ router.put(
   })
 );
 
-//TODO make it that reviews are only deleted by admins
-//! delets a particular entry.
-/*router.delete(
-  "/:id",
+router.get(
+  "/job/:jobid",
+  auth,
   asyncMiddleware(async (req, res) => {
-    Review.destroy({
+    //end request if the job doesnt exist
+    var job = await Job.findOne({
       where: {
-        id: req.params.id,
+        id: req.params.jobid,
       },
-    }).then(res.send("Review deleted successfully"));
+    });
+
+    if (job == null || job == "")
+      return res.status(404).send({ error: "Job not found" });
+
+    //end request if current user is neither agent nor client
+
+    /*
+    if (job.agentId != req.user.userId) {
+      if (job.clientId != req.user.userId) {
+        return res.status(400).send({ error: "Insufficient permissions" });
+      }
+    }
+    */
+
+    var review = await Review.findOne({
+      where: {
+        reviewerId: 101 /*req.user.userId*/,
+        jobId: 421 /*req.params.jobid*/,
+      },
+      attributes: {
+        exclude: ["createdAt", "subjectId", "jobId"],
+      },
+    });
+
+    if (review == null) {
+      console.log("No review");
+      return res.status(404).send({ error: "No review" });
+    }
+
+    console.log(review);
+    res.status(200).send(review);
   })
 );
-*/
 
 module.exports = router;
+
+/* if (job.statusId != JOB_COMPLETED)
+      return res
+        .status(404)
+        .send({
+          error: "Job must be marked completed before leaving a review",
+        });*/
