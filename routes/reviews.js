@@ -3,6 +3,7 @@ const { Review, User, Job } = require("../models/index");
 const auth = require("../middleware/auth");
 const asyncMiddleware = require("../middleware/asyncMiddleware");
 const { JOB_COMPLETED } = require("../statusCodes");
+const { toInteger } = require("lodash");
 
 const router = express.Router();
 //end request if job isnt marked complete
@@ -14,15 +15,57 @@ router.post(
   "/",
   auth,
   asyncMiddleware(async (req, res) => {
+    console.log(req.body);
+    //confirm job exists
+    var job = await Job.findOne({
+      where: {
+        id: req.body.jobId,
+      },
+    });
+
+    //end request if job doesnt exist
+    if (!job) return res.status(400).send({ error: "Bad request" });
+
+    //end request if job isn't complete
+    if (job.statusId !== JOB_COMPLETED)
+      return res
+        .status(400)
+        .send({ error: "Job has not been marked complete" });
+
+    //set the subjectId
+    var subjId = req.body.userIsClient ? job.agentId : job.clientId;
+
+    //end request if subject and reviewer IDs match
+    if (req.user.userId == subjId)
+      return res.status(400).send({ error: "Invalid token" });
+
+    //find existing review matching given params
+    var existsReview = await Review.findOne({
+      where: {
+        jobId: req.body.jobId,
+        reviewerId: req.user.userId,
+        subjectId: subjId,
+      },
+    });
+
+    //end request if review has already been made
+    if (existsReview)
+      return res
+        .status(400)
+        .send({ error: "A review for this user on this job already exists" });
+
+    //if all is ok, create the review
     const review = await Review.create({
       stars: req.body.stars,
       content: req.body.content,
-      subjectId: req.body.agentId,
-      reviewerId: req.body.clientId,
+      subjectId: subjId,
+      reviewerId: req.user.userId,
       jobId: req.body.jobId,
     });
 
-    res.send(review);
+    console.log(review);
+
+    res.status(200).send({ message: "OK" });
   })
 );
 
@@ -88,33 +131,26 @@ router.get(
       },
     });
 
-    if (job == null || job == "")
-      return res.status(404).send({ error: "Job not found" });
+    if (!job) return res.status(500).send({ error: "Job not found" });
 
     //end request if current user is neither agent nor client
-
-    /*
     if (job.agentId != req.user.userId) {
       if (job.clientId != req.user.userId) {
-        return res.status(400).send({ error: "Insufficient permissions" });
+        return res.status(401).send({ error: "Insufficient permissions" });
       }
     }
-    */
 
     var review = await Review.findOne({
       where: {
-        reviewerId: 101 /*req.user.userId*/,
-        jobId: 421 /*req.params.jobid*/,
+        reviewerId: req.user.userId,
+        jobId: req.params.jobid,
       },
       attributes: {
         exclude: ["createdAt", "subjectId", "jobId"],
       },
     });
 
-    if (review == null) {
-      console.log("No review");
-      return res.status(404).send({ error: "No review" });
-    }
+    if (review == null) return res.status(400).send({ error: "No review" });
 
     console.log(review);
     res.status(200).send(review);
@@ -122,10 +158,3 @@ router.get(
 );
 
 module.exports = router;
-
-/* if (job.statusId != JOB_COMPLETED)
-      return res
-        .status(404)
-        .send({
-          error: "Job must be marked completed before leaving a review",
-        });*/
