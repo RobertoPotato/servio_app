@@ -8,6 +8,7 @@ const {
   bidAccepted,
   createAlert,
 } = require("./../notifications");
+const { JOB_COMPLETED, JOB_DONE } = require("../statusCodes");
 
 const router = express.Router();
 
@@ -78,14 +79,14 @@ router.put(
       return res.status(400).send({ error: "The resource is not available" });
 
     //end request if status has already been changed as needed
-    if (job.statusId == req.body.statusId)
+    if (job.statusId == JOB_DONE)
       return res
         .status(400)
         .send({ error: "You already marked this job done" });
 
     const updated = await Job.update(
       {
-        statusId: req.body.statusId,
+        statusId: JOB_DONE,
       },
       {
         where: {
@@ -128,7 +129,7 @@ router.put(
       return res.status(400).send({ error: "The resource is not available" });
 
     //end request if status has already been changed as needed
-    if (job.statusId == req.body.statusId)
+    if (job.statusId == JOB_COMPLETED)
       return res
         .status(400)
         .send({ error: "You already marked this job completed" });
@@ -136,7 +137,7 @@ router.put(
     //Otherwise, update as needed
     const updated = await Job.update(
       {
-        statusId: req.body.statusId,
+        statusId: JOB_COMPLETED,
       },
       {
         where: {

@@ -3,13 +3,9 @@ const { Review, User, Job } = require("../models/index");
 const auth = require("../middleware/auth");
 const asyncMiddleware = require("../middleware/asyncMiddleware");
 const { JOB_COMPLETED } = require("../statusCodes");
-const { toInteger } = require("lodash");
 
 const router = express.Router();
-//end request if job isnt marked complete
 
-//get the agent's or client's ID based on value from isClient
-//console.log("Fetching review for a job of id: " + req.params.jobid);
 //* creates a new entry
 router.post(
   "/",
@@ -25,12 +21,17 @@ router.post(
 
     //end request if job doesnt exist
     if (!job) return res.status(400).send({ error: "Bad request" });
+    console.log("passed job existence");
 
+    console.log(
+      "Job status: " + job.statusId + "\n passed status: " + JOB_COMPLETED
+    );
     //end request if job isn't complete
     if (job.statusId !== JOB_COMPLETED)
       return res
         .status(400)
         .send({ error: "Job has not been marked complete" });
+    console.log("passed job completion");
 
     //set the subjectId
     var subjId = req.body.userIsClient ? job.agentId : job.clientId;
@@ -70,12 +71,13 @@ router.post(
 );
 
 router.get(
-  "/foruser/:userId",
+  "/foruser",
   auth,
   asyncMiddleware(async (req, res) => {
+    console.log("Fetching reviews");
     const reviews = await Review.findAll({
       where: {
-        subjectId: req.params.userId,
+        subjectId: req.user.userId,
       },
       attributes: ["stars", "content", "updatedAt"],
       include: { model: User, attributes: ["firstName", "lastName"] },
