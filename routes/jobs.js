@@ -78,12 +78,21 @@ router.put(
     if (job == null)
       return res.status(400).send({ error: "The resource is not available" });
 
+    console.log("Passed job exists");
+    //end request if job is already marked complete
+    if (job.statusId == JOB_COMPLETED)
+      return res.status(400).send({
+        error: "The job has already been marked complete by the client",
+      });
+
+    console.log("Passed job not marked complete");
     //end request if status has already been changed as needed
     if (job.statusId == JOB_DONE)
       return res
         .status(400)
         .send({ error: "You already marked this job done" });
 
+    console.log("Passed job not marked done");
     const updated = await Job.update(
       {
         statusId: JOB_DONE,
@@ -112,7 +121,7 @@ router.put(
   })
 );
 
-//? Marks job as complete = done by client
+//? Marks job as complete = carried out by client
 router.put(
   "/:jobid/complete",
   auth,

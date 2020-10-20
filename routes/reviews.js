@@ -1,5 +1,5 @@
 const express = require("express");
-const { Review, User, Job } = require("../models/index");
+const { Review, User, Job, Bid } = require("../models/index");
 const auth = require("../middleware/auth");
 const asyncMiddleware = require("../middleware/asyncMiddleware");
 const { JOB_COMPLETED } = require("../statusCodes");
@@ -154,8 +154,38 @@ router.get(
 
     if (review == null) return res.status(400).send({ error: "No review" });
 
-    console.log(review);
     res.status(200).send(review);
+  })
+);
+
+//* Get reviews for a user who has made a bid for a job
+router.get(
+  "/foruser/:bidId",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    console.log("Getting reviews for user with bid: " + req.params.bidId);
+    var bid = await Bid.findOne({
+      where: {
+        id: req.params.bidId,
+      },
+    });
+
+    if (!bid)
+      return res
+        .status(400)
+        .send({ error: "Internal error, couldnt find that bid" });
+
+    console.log("Passed bid exists.User id is " + bid.userId + " !");
+
+    var reviews = await Review.findAll({
+      where: {
+        subjectId: bid.userId,
+      },
+      attributes: ["stars", "content", "updatedAt"],
+      include: { model: User, attributes: ["firstName", "lastName"] },
+    });
+
+    res.status(200).send(reviews);
   })
 );
 

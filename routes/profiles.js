@@ -70,6 +70,27 @@ router.get(
   })
 );
 
+//find Logged in user's profile and name
+router.get(
+  "/withName",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const profiles = await Profile.findOne({
+      where: { userId: req.user.userId },
+      attributes: {
+        exclude: ["id", "userId", "tierId", "roleId", "createdAt"],
+      },
+      include: [
+        { model: Tier, attributes: ["title", "description", "badgeUrl"] },
+        { model: Role, attributes: ["title", "description"] },
+        { model: User, attributes: ["firstName", "lastName"] },
+      ],
+    });
+
+    res.status(200).send(profiles);
+  })
+);
+
 //confirm profile exists
 router.get(
   "/validate",
