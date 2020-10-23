@@ -8,8 +8,11 @@ const {
   maxServices,
 } = require("../constants");
 
+const { SERVICE_ACTIVE } = require("../statusCodes");
+
 const faker = require("faker");
 
+//all the services will be seeded with the active status
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const services = [...Array(maxServices)].map((service) => ({
@@ -23,7 +26,7 @@ module.exports = {
       town: faker.address.city(),
       userId: faker.random.number({ min: actualMin, max: maxUsers }), //* generates fake whole numbers in given range
       categoryId: faker.random.number({ min: actualMin, max: maxCategories }), //
-      statusId: faker.random.number({ min: actualMin, max: maxStatuses }),
+      statusId: SERVICE_ACTIVE /*faker.random.number({ min: actualMin, max: maxStatuses })*/,
       createdAt: new Date(),
       updatedAt: new Date(),
     }));

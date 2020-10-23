@@ -8,7 +8,12 @@ const {
   bidAccepted,
   createAlert,
 } = require("./../notifications");
-const { JOB_COMPLETED, JOB_DONE } = require("../statusCodes");
+const {
+  JOB_COMPLETED,
+  JOB_DONE,
+  JOB_ACTIVE,
+  SERVICE_ACTIVE,
+} = require("../statusCodes");
 
 const router = express.Router();
 
@@ -20,6 +25,7 @@ router.post(
     var service = await Service.findOne({
       where: {
         id: req.body.serviceId,
+        statusId: SERVICE_ACTIVE,
       },
     });
 
@@ -42,9 +48,10 @@ router.post(
       agentId: req.body.agentId,
       bidId: req.body.bidId,
       serviceId: req.body.serviceId,
-      statusId: req.body.statusId,
+      statusId: JOB_ACTIVE,
     });
 
+    //* Generating an alert
     var alert = await createAlert(
       req.user.userId,
       bidAccepted.title,
@@ -57,12 +64,23 @@ router.post(
       bidAccepted.type
     );
 
-    res.send(job);
+    //TODO change the status of the service to assigned
+    var newService = Service.update(
+      {
+        statusId: parseInt(SERVICE_ASSIGNED),
+      },
+      {
+        where: {
+          id: req.params.serviceId,
+          userId: req.user.userId,
+        },
+      }
+    );
+    res.status(200).send(job);
   })
 );
 
-//updates the data
-//? Marks job as done = done by agent
+//updates the data. Marks job as done = done by agent
 router.put(
   "/:jobid/done",
   auth,
@@ -78,21 +96,18 @@ router.put(
     if (job == null)
       return res.status(400).send({ error: "The resource is not available" });
 
-    console.log("Passed job exists");
     //end request if job is already marked complete
     if (job.statusId == JOB_COMPLETED)
       return res.status(400).send({
         error: "The job has already been marked complete by the client",
       });
 
-    console.log("Passed job not marked complete");
-    //end request if status has already been changed as needed
+    //end request if status has already been marked done
     if (job.statusId == JOB_DONE)
       return res
         .status(400)
         .send({ error: "You already marked this job done" });
 
-    console.log("Passed job not marked done");
     const updated = await Job.update(
       {
         statusId: JOB_DONE,

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { SERVICE_ACTIVE } = require("../statusCodes");
 const { Service, User } = require("../models/index");
 const multer = require("multer");
 const auth = require("../middleware/auth");
@@ -19,7 +20,7 @@ var upload = multer({
   limits: { fileSize: 1024 * 1024 * 20 },
 });
 
-//creates a new entry
+//creates a new service
 router.post(
   "/",
   upload.single("imageUrl"),
@@ -44,7 +45,7 @@ router.post(
   })
 );
 
-//gets data on specific based on id
+//gets data on specific service based on id
 router.get(
   "/:id",
   asyncMiddleware(async (req, res) => {
@@ -80,7 +81,7 @@ router.get(
     const services = await Service.findAll({
       where: {
         categoryId: req.params.id,
-        //TODO statusId: "active" status id
+        statusId: SERVICE_ACTIVE,
       },
       include: { model: User, attributes: ["firstName", "lastName"] },
     });

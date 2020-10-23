@@ -1,4 +1,4 @@
-//Services
+//SERVICES
 
 //is open for bidding
 //these will be shown in the categories for bidding
@@ -8,7 +8,7 @@ const SERVICE_ACTIVE = 1;
 //other bidders not selected will be informed
 const SERVICE_ASSIGNED = 2;
 
-//! for future references
+//For future references
 //needs more bidders ie employ more people for the same service
 //can already have some bidders assigned but will still be open for bidding till limit is reached
 const SERVICE_MULTIPLE_HIRES = 3;
@@ -22,9 +22,10 @@ const SERVICE_UNDER_REVIEW = 4;
 const SERVICE_NOT_AVAILABLE = 5;
 
 //Jobs
-//job has started
+//job has been assigned to a user. Any job created will have this
+//status by default
 //service will need to be marked as assigned first: id: 2
-const JOB_STARTED = 6;
+const JOB_ACTIVE = 6;
 
 //job is completed - marked by client
 //the job status id should be 6 or 8 before it changes to 7. only client can change this
@@ -42,7 +43,7 @@ module.exports = {
   SERVICE_MULTIPLE_HIRES: SERVICE_MULTIPLE_HIRES,
   SERVICE_UNDER_REVIEW: SERVICE_UNDER_REVIEW,
   SERVICE_NOT_AVAILABLE: SERVICE_NOT_AVAILABLE,
-  JOB_STARTED: JOB_STARTED,
+  JOB_ACTIVE: JOB_ACTIVE,
   JOB_COMPLETED: JOB_COMPLETED,
   JOB_DONE: JOB_DONE,
   JOB_STALLED: JOB_STALLED,
