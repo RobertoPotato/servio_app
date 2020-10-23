@@ -85,7 +85,7 @@ router.get(
       },
     });
 
-    if (!jobsCreated) {
+    if (jobsCreated == null) {
       jobs_created = 0;
     } else {
       jobs_created = jobsCreated;
@@ -109,7 +109,7 @@ router.get(
     var avgReviews = await Review.findAll({
       attributes: [[sequelize.fn("AVG", sequelize.col("stars")), "avg"]],
       where: {
-        subjectId: 101,
+        subjectId: req.user.userId,
       },
     });
 
@@ -122,15 +122,15 @@ router.get(
     //! Ratio of successful bids to bids sent => Bidding success rate => Will be calculated on client device
     //! Hiring rate jobs_created/services_count Will be calculated on client device
 
-    res.send(
+    res.send({
       bid_count,
       job_count,
       jobs_completed,
       jobs_stalled,
       jobs_created,
       services_count,
-      average_rating
-    );
+      average_rating,
+    });
   })
 );
 
