@@ -36,7 +36,7 @@ router.post(
       imageUrl: req.file.path,
       userId: req.user.userId, //getting this value from the auth middleware
       categoryId: parseInt(req.body.categoryId),
-      statusId: parseInt(req.body.statusId),
+      statusId: SERVICE_ACTIVE,
       county: req.body.county,
       town: req.body.town,
     });
