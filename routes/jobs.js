@@ -13,6 +13,7 @@ const {
   JOB_DONE,
   JOB_ACTIVE,
   SERVICE_ACTIVE,
+  SERVICE_ASSIGNED,
 } = require("../statusCodes");
 
 const router = express.Router();
