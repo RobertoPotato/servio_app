@@ -19,8 +19,8 @@ router.get(
     var services_count;
     var average_rating;
 
-    var userId = 1;
-    //var userId = req.user.userId;
+    //var userId = 1;
+    var userId = req.user.userId;
     //number of bids the user has sent
     var bids = await Bid.count({
       distinct: "id",
