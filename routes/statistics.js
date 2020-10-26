@@ -19,11 +19,13 @@ router.get(
     var services_count;
     var average_rating;
 
+    var userId = 1;
+    //var userId = req.user.userId;
     //number of bids the user has sent
     var bids = await Bid.count({
       distinct: "id",
       where: {
-        userId: req.user.userId,
+        userId: userId,
       },
     });
 
@@ -37,7 +39,7 @@ router.get(
     var jobs = await Job.count({
       distinct: "id",
       where: {
-        agentId: req.user.userId,
+        agentId: userId,
       },
     });
 
@@ -51,7 +53,7 @@ router.get(
     var jobsCompleted = await Job.count({
       distinct: "id",
       where: {
-        agentId: req.user.userId,
+        agentId: userId,
         statusId: JOB_COMPLETED,
       },
     });
@@ -66,7 +68,7 @@ router.get(
     var jobsStalled = await Job.count({
       distinct: "id",
       where: {
-        agentId: req.user.userId,
+        agentId: userId,
         statusId: JOB_STALLED,
       },
     });
@@ -81,7 +83,7 @@ router.get(
     var jobsCreated = await Job.count({
       distinct: "id",
       where: {
-        clientId: req.user.userId,
+        clientId: userId,
       },
     });
 
@@ -95,7 +97,7 @@ router.get(
     var servicesCount = await Service.count({
       distinct: "id",
       where: {
-        userId: req.user.userId,
+        userId: userId,
       },
     });
 
@@ -109,7 +111,7 @@ router.get(
     var avgReviews = await Review.findAll({
       attributes: [[sequelize.fn("AVG", sequelize.col("stars")), "avg"]],
       where: {
-        subjectId: req.user.userId,
+        subjectId: userId,
       },
     });
 

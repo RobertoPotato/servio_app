@@ -32,7 +32,6 @@ router.post(
       budgetMin: parseFloat(req.body.budgetMin),
       budgetMax: parseFloat(req.body.budgetMax),
       terms: req.body.terms,
-      // Append server's details statically to the url being saved
       imageUrl: req.file.path,
       userId: req.user.userId, //getting this value from the auth middleware
       categoryId: parseInt(req.body.categoryId),

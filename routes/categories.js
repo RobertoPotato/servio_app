@@ -64,6 +64,18 @@ router.get(
   })
 );
 
+//gets category id and title for the create service page
+router.get(
+  "/items/:i",
+  asyncMiddleware(async (req, res) => {
+    var categories = await Category.findAll({
+      attributes: ["id", "title"],
+    });
+
+    res.status(200).send(categories);
+  })
+);
+
 //TODO updates the data
 //! ONLY done by ADMIN
 /*router.put(
