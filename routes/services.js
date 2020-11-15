@@ -1,14 +1,14 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { SERVICE_ACTIVE } = require("../statusCodes");
-const { Service, User } = require("../models/index");
-const multer = require("multer");
-const auth = require("../middleware/auth");
-const asyncMiddleware = require("../middleware/asyncMiddleware");
+const { SERVICE_ACTIVE } = require('../statusCodes');
+const { Service, User } = require('../models/index');
+const multer = require('multer');
+const auth = require('../middleware/auth');
+const asyncMiddleware = require('../middleware/asyncMiddleware');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads/");
+    cb(null, './uploads/');
   },
   filename: function (req, file, cb) {
     cb(null, new Date().toISOString() + file.originalname);
@@ -22,8 +22,8 @@ var upload = multer({
 
 //creates a new service
 router.post(
-  "/",
-  upload.single("imageUrl"),
+  '/',
+  upload.single('imageUrl'),
   auth,
   asyncMiddleware(async (req, res, next) => {
     const service = await Service.create({
@@ -33,7 +33,7 @@ router.post(
       budgetMax: parseFloat(req.body.budgetMax),
       terms: req.body.terms,
       imageUrl: req.file.path,
-      userId: req.user.userId, //getting this value from the auth middleware
+      userId: req.user.userId,
       categoryId: parseInt(req.body.categoryId),
       statusId: SERVICE_ACTIVE,
       county: req.body.county,
@@ -46,7 +46,7 @@ router.post(
 
 //gets data on specific service based on id
 router.get(
-  "/:id",
+  '/:id',
   asyncMiddleware(async (req, res) => {
     const service = await Service.findAll({
       where: {
@@ -60,7 +60,7 @@ router.get(
 
 // get all services for a particular user
 router.get(
-  "/foruser/:abcde",
+  '/foruser/:abcde',
   auth,
   asyncMiddleware(async (req, res) => {
     const services = await Service.findAll({
@@ -75,14 +75,14 @@ router.get(
 
 // get all services from a certain category id
 router.get(
-  "/category/:id",
+  '/category/:id',
   asyncMiddleware(async (req, res) => {
     const services = await Service.findAll({
       where: {
         categoryId: req.params.id,
         statusId: SERVICE_ACTIVE,
       },
-      include: { model: User, attributes: ["firstName", "lastName"] },
+      include: { model: User, attributes: ['firstName', 'lastName'] },
     });
 
     res.status(200).send(services);
@@ -91,7 +91,7 @@ router.get(
 
 //updates the data
 router.put(
-  "/:serviceId",
+  '/:serviceId',
   auth,
   asyncMiddleware(async (req, res) => {
     Service.update(
@@ -113,14 +113,14 @@ router.put(
           userId: req.user.userId,
         },
       }
-    ).then(res.send("Service updated"));
+    ).then(res.send('Service updated'));
   })
 );
 
 //delets a particular entry.
 //TODO Delete only when there are no actively running jobs or bids for the service
 router.delete(
-  "/:id",
+  '/:id',
   auth,
   asyncMiddleware(async (req, res) => {
     Service.destroy({
@@ -128,7 +128,7 @@ router.delete(
         id: req.params.id,
         userId: req.user.userId,
       },
-    }).then(res.send("Service has been deleted successfully"));
+    }).then(res.send('Service has been deleted successfully'));
   })
 );
 

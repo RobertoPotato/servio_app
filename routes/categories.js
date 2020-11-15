@@ -1,12 +1,12 @@
-const express = require("express");
-const { Category, Service, Sequelize } = require("../models/index");
-const asyncMiddleware = require("../middleware/asyncMiddleware");
+const express = require('express');
+const { Category, Service, Sequelize } = require('../models/index');
+const asyncMiddleware = require('../middleware/asyncMiddleware');
 
 const router = express.Router();
 
 //gets data on specific based on id
 router.get(
-  "/:id",
+  '/:id',
   asyncMiddleware(async (req, res) => {
     const category = await Category.findAll({
       where: {
@@ -20,11 +20,11 @@ router.get(
 
 //gets all entries from db
 router.get(
-  "/",
+  '/',
   asyncMiddleware(async (req, res) => {
     const categories = await Category.findAll({
       attributes: {
-        exclude: ["createdAt", "updatedAt"],
+        exclude: ['createdAt', 'updatedAt'],
       },
     });
 
@@ -33,10 +33,10 @@ router.get(
 );
 
 router.get(
-  "/count/:id",
+  '/count/:id',
   asyncMiddleware(async (req, res) => {
     var count = await Service.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         categoryId: req.params.id,
       },
@@ -48,10 +48,10 @@ router.get(
 
 //get number of services in a given category
 router.get(
-  "/servicecount/:categoryid",
+  '/servicecount/:categoryid',
   asyncMiddleware(async (req, res) => {
     var count = await Service.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         categoryId: req.params.categoryid,
       },
@@ -59,17 +59,16 @@ router.get(
 
     //if (count == 0) return res.status(204).send({ error: "0" });
 
-    console.log(count + " services for category " + req.params.categoryid);
     res.status(200).send({ count });
   })
 );
 
 //gets category id and title for the create service page
 router.get(
-  "/items/:i",
+  '/items/:i',
   asyncMiddleware(async (req, res) => {
     var categories = await Category.findAll({
-      attributes: ["id", "title"],
+      attributes: ['id', 'title'],
     });
 
     res.status(200).send(categories);
