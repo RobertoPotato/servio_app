@@ -1,15 +1,15 @@
-const asyncMiddleware = require("../middleware/asyncMiddleware");
-const auth = require("../middleware/auth");
-const express = require("express");
-const { Bid, User, Service, Status } = require("../models/index");
-const { createAlert, bidsReceived } = require("../notifications");
+const asyncMiddleware = require('../middleware/asyncMiddleware');
+const auth = require('../middleware/auth');
+const express = require('express');
+const { Bid, User, Service, Status } = require('../models/index');
+const { createAlert, bidsReceived } = require('../notifications');
 const router = express.Router();
 
-const defaultCurrency = "KES";
+const defaultCurrency = 'KES';
 //creates a new entry
 //? confirm that the user has not already posted a bid for the service
 router.post(
-  "/",
+  '/',
   auth,
   asyncMiddleware(async (req, res) => {
     //Confirm the service exists If not end this request
@@ -20,7 +20,7 @@ router.post(
     });
 
     if (service == null)
-      return res.status(400).send({ error: "The service no longer exists" });
+      return res.status(400).send({ error: 'The service no longer exists' });
 
     //If the service belongs to user making the bid, end request
     if (service.userId == req.user.userId)
@@ -35,7 +35,7 @@ router.post(
     });
 
     if (bidExists.length != 0)
-      return res.status(400).send({ error: "You already made a bid for this" });
+      return res.status(400).send({ error: 'You already made a bid for this' });
 
     //Otherwise, create the bid
     const bid = await Bid.create({
@@ -51,7 +51,12 @@ router.post(
     var alert = await createAlert(
       req.user.userId,
       bidsReceived.title + service.title,
-      req.user.firstName + " " + req.user.lastName + bidsReceived.payLoad,
+      req.user.firstName +
+        ' ' +
+        req.user.lastName +
+        bidsReceived.payLoad +
+        ': ' +
+        service.title,
       service.userId,
       bidsReceived.type
     );
@@ -62,7 +67,7 @@ router.post(
 
 //get all bids for a certain service => Users can see bids made for a service theyve requested
 router.get(
-  "/formyservice/:serviceId",
+  '/formyservice/:serviceId',
   auth,
   asyncMiddleware(async (req, res) => {
     //check for service
@@ -74,20 +79,20 @@ router.get(
 
     //If service doesn't exist, end request
     if (service == null)
-      return res.status(400).send({ error: "Nothing to show" });
+      return res.status(400).send({ error: 'Nothing to show' });
 
     //If service doesn't belong to the logged-in user, end request
     if (service.userId != req.user.userId) {
       return res
         .status(401)
-        .send({ error: "You have no permission to view this resource" });
+        .send({ error: 'You have no permission to view this resource' });
     }
 
     const bids = await Bid.findAll({
       where: {
         serviceId: req.params.serviceId,
       },
-      include: [{ model: User, attributes: ["firstName", "lastName"] }],
+      include: [{ model: User, attributes: ['firstName', 'lastName'] }],
     });
 
     res.status(200).send(bids);
@@ -96,7 +101,7 @@ router.get(
 
 // user can see all the bids they've made and the associated service
 router.get(
-  "/mine",
+  '/mine',
   auth,
   asyncMiddleware(async (req, res) => {
     const bid = await Bid.findAll({
@@ -104,7 +109,7 @@ router.get(
         userId: req.user.userId,
       },
       attributes: {
-        exclude: ["id", "userId", "serviceId", "createdAt"],
+        exclude: ['id', 'userId', 'serviceId', 'createdAt'],
       },
       include: [
         {
@@ -112,11 +117,11 @@ router.get(
           include: [
             {
               model: Status,
-              attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+              attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
             },
           ],
           attributes: {
-            exclude: ["id", "userId", "categoryId", "createdAt", "statusId"],
+            exclude: ['id', 'userId', 'categoryId', 'createdAt', 'statusId'],
           },
         },
       ],
@@ -128,7 +133,7 @@ router.get(
 
 //updates the data
 router.put(
-  "/update/:id",
+  '/update/:id',
   auth,
   asyncMiddleware(async (req, res) => {
     await Bid.update(
@@ -146,13 +151,13 @@ router.put(
         },
       }
     );
-    res.send("Bid updated");
+    res.send('Bid updated');
   })
 );
 
 //delets a particular entry.
 router.delete(
-  "/:id",
+  '/:id',
   auth,
   asyncMiddleware(async (req, res) => {
     await Bid.destroy({
@@ -161,7 +166,7 @@ router.delete(
         userId: req.user.userId,
       },
     });
-    res.send("Successfully deleted");
+    res.send('Successfully deleted');
   })
 );
 
