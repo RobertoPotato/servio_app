@@ -73,7 +73,7 @@ router.post(
         },
         {
           where: {
-            id: req.params.serviceId,
+            id: req.body.serviceId,
             userId: req.user.userId,
           },
         }
