@@ -1,26 +1,26 @@
-const express = require("express");
-const { Job, User, Service, Status, Bid } = require("../models/index");
-const auth = require("../middleware/auth");
-const asyncMiddleware = require("../middleware/asyncMiddleware");
+const express = require('express');
+const { Job, User, Service, Status, Bid } = require('../models/index');
+const auth = require('../middleware/auth');
+const asyncMiddleware = require('../middleware/asyncMiddleware');
 const {
   jobDone,
   jobComplete,
   bidAccepted,
   createAlert,
-} = require("./../notifications");
+} = require('./../notifications');
 const {
   JOB_COMPLETED,
   JOB_DONE,
   JOB_ACTIVE,
   SERVICE_ACTIVE,
   SERVICE_ASSIGNED,
-} = require("../statusCodes");
+} = require('../statusCodes');
 
 const router = express.Router();
 
 //creates a new entry
 router.post(
-  "/",
+  '/',
   auth,
   asyncMiddleware(async (req, res) => {
     var service = await Service.findOne({
@@ -34,14 +34,14 @@ router.post(
     if (service == null)
       return res.status(400).send({
         error:
-          "That service is not taking any new bids. It might be assigned to someone else already.",
+          'This service is not taking any new bids. It might be unavailable or assigned to someone else already.',
       });
 
     //end request if service doesnt belong to logged in user
     if (service.userId != req.user.userId)
       return res.status(400).send({
         error:
-          "No permission. Please log in again and if the problem persists contact support.",
+          'No permission. Please log in again and if the problem persists contact support.',
       });
 
     const job = await Job.create({
@@ -53,11 +53,11 @@ router.post(
     });
 
     //* Generating an alert
-    var alert = await createAlert(
+    createAlert(
       req.user.userId,
       bidAccepted.title,
       req.user.firstName +
-        " " +
+        ' ' +
         req.user.lastName +
         bidAccepted.payLoad +
         service.title,
@@ -66,24 +66,26 @@ router.post(
     );
 
     //TODO change the status of the service to assigned
-    var newService = Service.update(
-      {
-        statusId: parseInt(SERVICE_ASSIGNED),
-      },
-      {
-        where: {
-          id: req.params.serviceId,
-          userId: req.user.userId,
+    try {
+      Service.update(
+        {
+          statusId: parseInt(SERVICE_ASSIGNED),
         },
-      }
-    );
+        {
+          where: {
+            id: req.params.serviceId,
+            userId: req.user.userId,
+          },
+        }
+      );
+    } catch (error) {}
     res.status(200).send(job);
   })
 );
 
 //updates the data. Marks job as done = done by agent
 router.put(
-  "/:jobid/done",
+  '/:jobid/done',
   auth,
   asyncMiddleware(async (req, res) => {
     const job = await Job.findOne({
@@ -95,19 +97,19 @@ router.put(
 
     //end request if the job being changed doesn't exist
     if (job == null)
-      return res.status(400).send({ error: "The resource is not available" });
+      return res.status(400).send({ error: 'The resource is not available' });
 
     //end request if job is already marked complete
     if (job.statusId == JOB_COMPLETED)
       return res.status(400).send({
-        error: "The job has already been marked complete by the client",
+        error: 'The job has already been marked complete by the client',
       });
 
     //end request if status has already been marked done
     if (job.statusId == JOB_DONE)
       return res
         .status(400)
-        .send({ error: "You already marked this job done" });
+        .send({ error: 'You already marked this job done' });
 
     const updated = await Job.update(
       {
@@ -124,22 +126,22 @@ router.put(
     createAlert(
       req.user.userId,
       jobDone.title,
-      "Your agent, " +
+      'Your agent, ' +
         req.user.firstName +
-        " " +
+        ' ' +
         req.user.lastName +
         jobDone.payLoad,
       job.clientId,
       jobDone.type
     );
 
-    res.status(200).send("Job done");
+    res.status(200).send('Job done');
   })
 );
 
 //? Marks job as complete = carried out by client
 router.put(
-  "/:jobid/complete",
+  '/:jobid/complete',
   auth,
   asyncMiddleware(async (req, res) => {
     const job = await Job.findOne({
@@ -151,13 +153,13 @@ router.put(
 
     //end request if the job being changed doesn't exist
     if (job == null)
-      return res.status(400).send({ error: "The resource is not available" });
+      return res.status(400).send({ error: 'The resource is not available' });
 
     //end request if status has already been changed as needed
     if (job.statusId == JOB_COMPLETED)
       return res
         .status(400)
-        .send({ error: "You already marked this job completed" });
+        .send({ error: 'You already marked this job completed' });
 
     //Otherwise, update as needed
     const updated = await Job.update(
@@ -175,23 +177,23 @@ router.put(
     createAlert(
       req.user.userId,
       jobComplete.title,
-      "Your client, " +
+      'Your client, ' +
         req.user.firstName +
-        " " +
+        ' ' +
         req.user.lastName +
         jobComplete.payLoad,
       job.agentId,
       jobComplete.type
     );
 
-    res.status(200).send("Job completed");
+    res.status(200).send('Job completed');
   })
 );
 
 //gets data on specific based on id
 //TODO Make it so that either client or agent can get this info
 router.get(
-  "/:id",
+  '/:id',
   auth,
   asyncMiddleware(async (req, res) => {
     const job = await Job.findOne({
@@ -203,7 +205,7 @@ router.get(
     if (job.clientId != req.user.userId || job.agentId != req.user.userId)
       return res
         .status(400)
-        .send({ error: "You lack permissions to view this resource" });
+        .send({ error: 'You lack permissions to view this resource' });
 
     res.status(200).send(job);
   })
@@ -211,27 +213,27 @@ router.get(
 
 //* load jobs of a particular client
 router.get(
-  "/forclient/:smtn",
+  '/forclient/:smtn',
   auth,
   asyncMiddleware(async (req, res) => {
     const tasks = await Job.findAll({
-      attributes: ["id", "createdAt", "clientId", "agentId"],
+      attributes: ['id', 'createdAt', 'clientId', 'agentId'],
       include: [
-        { model: User, as: "client", attributes: ["firstName", "lastName"] },
-        { model: User, as: "agent", attributes: ["firstName", "lastName"] },
+        { model: User, as: 'client', attributes: ['firstName', 'lastName'] },
+        { model: User, as: 'agent', attributes: ['firstName', 'lastName'] },
         {
           model: Bid,
-          attributes: { exclude: ["id", "userId", "serviceId", "updatedAt"] },
+          attributes: { exclude: ['id', 'userId', 'serviceId', 'updatedAt'] },
         },
         {
           model: Service,
           attributes: {
-            exclude: ["id", "userId", "categoryId", "statusId", "updatedAt"],
+            exclude: ['id', 'userId', 'categoryId', 'statusId', 'updatedAt'],
           },
         },
         {
           model: Status,
-          attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+          attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
         },
       ],
       where: {
@@ -246,28 +248,28 @@ router.get(
 //* load jobs of a particular agent
 //! Ignore the smtn item in the url
 router.get(
-  "/foragent/:smtn",
+  '/foragent/:smtn',
   auth,
   asyncMiddleware(async (req, res) => {
     const tasks = await Job.findAll({
       where: { agentId: req.user.userId },
-      attributes: ["id", "createdAt", "clientId", "agentId"],
+      attributes: ['id', 'createdAt', 'clientId', 'agentId'],
       include: [
-        { model: User, as: "client", attributes: ["firstName", "lastName"] },
-        { model: User, as: "agent", attributes: ["firstName", "lastName"] },
+        { model: User, as: 'client', attributes: ['firstName', 'lastName'] },
+        { model: User, as: 'agent', attributes: ['firstName', 'lastName'] },
         {
           model: Bid,
-          attributes: { exclude: ["id", "userId", "serviceId", "updatedAt"] },
+          attributes: { exclude: ['id', 'userId', 'serviceId', 'updatedAt'] },
         },
         {
           model: Service,
           attributes: {
-            exclude: ["id", "userId", "categoryId", "statusId", "updatedAt"],
+            exclude: ['id', 'userId', 'categoryId', 'statusId', 'updatedAt'],
           },
         },
         {
           model: Status,
-          attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+          attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
         },
       ],
     });
