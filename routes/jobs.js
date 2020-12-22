@@ -15,6 +15,7 @@ const {
   SERVICE_ACTIVE,
   SERVICE_ASSIGNED,
 } = require('../statusCodes');
+const e = require('express');
 
 const router = express.Router();
 
@@ -78,7 +79,9 @@ router.post(
           },
         }
       );
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
     res.status(200).send(job);
   })
 );
