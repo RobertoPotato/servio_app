@@ -1,14 +1,14 @@
-const express = require("express");
-const auth = require("../middleware/auth");
-const { Review, Job, Bid, Service } = require("../models/index");
-const { JOB_COMPLETED, JOB_STALLED } = require("../statusCodes");
-const asyncMiddleware = require("../middleware/asyncMiddleware");
-const sequelize = require("sequelize");
+const express = require('express');
+const auth = require('../middleware/auth');
+const { Review, Job, Bid, Service } = require('../models/index');
+const { JOB_COMPLETED, JOB_STALLED } = require('../statusCodes');
+const asyncMiddleware = require('../middleware/asyncMiddleware');
+const sequelize = require('sequelize');
 
 const router = express.Router();
 
 router.get(
-  "/",
+  '/',
   auth,
   asyncMiddleware(async (req, res) => {
     var bid_count;
@@ -23,7 +23,7 @@ router.get(
     var userId = req.user.userId;
     //number of bids the user has sent
     var bids = await Bid.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         userId: userId,
       },
@@ -37,7 +37,7 @@ router.get(
 
     //number of jobs the user has been awarded
     var jobs = await Job.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         agentId: userId,
       },
@@ -51,7 +51,7 @@ router.get(
 
     //number of jobs the user has completed
     var jobsCompleted = await Job.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         agentId: userId,
         statusId: JOB_COMPLETED,
@@ -66,7 +66,7 @@ router.get(
 
     //number of jobs awarded but not completed
     var jobsStalled = await Job.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         agentId: userId,
         statusId: JOB_STALLED,
@@ -81,7 +81,7 @@ router.get(
 
     //number of jobs the user has created
     var jobsCreated = await Job.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         clientId: userId,
       },
@@ -95,7 +95,7 @@ router.get(
 
     //number of services the user has posted
     var servicesCount = await Service.count({
-      distinct: "id",
+      distinct: 'id',
       where: {
         userId: userId,
       },
@@ -109,22 +109,25 @@ router.get(
 
     //The user's average rating
     var avgReviews = await Review.findAll({
-      attributes: [[sequelize.fn("AVG", sequelize.col("stars")), "avg"]],
+      attributes: [[sequelize.fn('AVG', sequelize.col('stars')), 'avg']],
       where: {
         subjectId: userId,
       },
     });
 
-    if (!avgReviews) {
+    //if the average is empty or inexistent, return a 0. Else return the value
+    if (!avgReviews || avgReviews[0].dataValues.avg == null) {
       average_rating = 0;
     } else {
-      average_rating = avgReviews;
+      average_rating = avgReviews[0].dataValues.avg;
+      console.log(average_rating);
     }
 
     //! Ratio of successful bids to bids sent => Bidding success rate => Will be calculated on client device
     //! Hiring rate jobs_created/services_count Will be calculated on client device
 
-    res.send({
+    console.log(`Stats are:${bid_count}`);
+    res.status(200).send({
       bid_count,
       job_count,
       jobs_completed,
@@ -136,9 +139,9 @@ router.get(
   })
 );
 
-router.get("/test", async (req, res) => {
+router.get('/test', async (req, res) => {
   var avgReviews = await Review.findAll({
-    attributes: [[sequelize.fn("AVG", sequelize.col("stars")), "avg"]],
+    attributes: [[sequelize.fn('AVG', sequelize.col('stars')), 'avg']],
     where: {
       subjectId: 101,
     },
