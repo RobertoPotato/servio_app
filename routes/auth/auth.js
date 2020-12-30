@@ -9,6 +9,7 @@ const KEY = 'SaveInsideEnvironmentVariableForProduction';
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
+  console.log(req.body);
   //Check if user already exists
   const checkForUser = await User.findAll({
     where: {
