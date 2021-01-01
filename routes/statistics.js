@@ -120,13 +120,11 @@ router.get(
       average_rating = 0;
     } else {
       average_rating = avgReviews[0].dataValues.avg;
-      console.log(average_rating);
     }
 
     //! Ratio of successful bids to bids sent => Bidding success rate => Will be calculated on client device
     //! Hiring rate jobs_created/services_count Will be calculated on client device
 
-    console.log(`Stats are:${bid_count}`);
     res.status(200).send({
       bid_count,
       job_count,
