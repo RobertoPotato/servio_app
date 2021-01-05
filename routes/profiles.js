@@ -1,14 +1,14 @@
-const express = require("express");
-const { User, Profile, Tier, Role } = require("../models/index");
+const express = require('express');
+const { User, Profile, Tier, Role } = require('../models/index');
 const router = express.Router();
-const auth = require("../middleware/auth");
-const asyncMiddleware = require("../middleware/asyncMiddleware");
-const multer = require("multer");
-var fs = require("fs");
+const auth = require('../middleware/auth');
+const asyncMiddleware = require('../middleware/asyncMiddleware');
+const multer = require('multer');
+var fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads");
+    cb(null, './uploads');
   },
   filename: function (req, file, cb) {
     cb(null, new Date().toISOString() + file.originalname);
@@ -22,8 +22,8 @@ var upload = multer({
 
 //creates a new entry
 router.post(
-  "/",
-  upload.single("picture"),
+  '/',
+  upload.single('picture'),
   auth,
   asyncMiddleware(async (req, res, next) => {
     var profileInfo = await Profile.findOne({
@@ -50,19 +50,65 @@ router.post(
   })
 );
 
+//Update a database entry
+router.put(
+  '/update',
+  upload.single('picture'),
+  auth,
+  asyncMiddleware(async (req, res, next) => {
+    var profileInfo = await Profile.findOne({
+      where: { userId: parseInt(req.user.userId) },
+    });
+
+    if (profileInfo == null)
+      return res.status(400).send({
+        error: "Profile doesn't exist",
+      });
+
+    if (req.file == null) {
+      await Profile.update(
+        {
+          bio: req.body.bio,
+          phoneNumber: req.body.phoneNumber,
+        },
+        {
+          where: {
+            userId: req.user.userId,
+          },
+        }
+      );
+    } else {
+      await Profile.update(
+        {
+          bio: req.body.bio,
+          picture: req.file.path,
+          phoneNumber: req.body.phoneNumber,
+        },
+        {
+          where: {
+            userId: req.user.userId,
+          },
+        }
+      );
+    }
+
+    res.status(200).send('OK');
+  })
+);
+
 //find Logged in user's profile
 router.get(
-  "/",
+  '/',
   auth,
   asyncMiddleware(async (req, res) => {
     const profiles = await Profile.findOne({
       where: { userId: req.user.userId },
       attributes: {
-        exclude: ["id", "userId", "tierId", "roleId", "createdAt"],
+        exclude: ['id', 'userId', 'tierId', 'roleId', 'createdAt'],
       },
       include: [
-        { model: Tier, attributes: ["title", "description", "badgeUrl"] },
-        { model: Role, attributes: ["title", "description"] },
+        { model: Tier, attributes: ['title', 'description', 'badgeUrl'] },
+        { model: Role, attributes: ['title', 'description'] },
       ],
     });
 
@@ -72,18 +118,18 @@ router.get(
 
 //find Logged in user's profile and name
 router.get(
-  "/withName",
+  '/withName',
   auth,
   asyncMiddleware(async (req, res) => {
     const profiles = await Profile.findOne({
       where: { userId: req.user.userId },
       attributes: {
-        exclude: ["id", "userId", "tierId", "roleId", "createdAt"],
+        exclude: ['id', 'userId', 'tierId', 'roleId', 'createdAt'],
       },
       include: [
-        { model: Tier, attributes: ["title", "description", "badgeUrl"] },
-        { model: Role, attributes: ["title", "description"] },
-        { model: User, attributes: ["firstName", "lastName"] },
+        { model: Tier, attributes: ['title', 'description', 'badgeUrl'] },
+        { model: Role, attributes: ['title', 'description'] },
+        { model: User, attributes: ['firstName', 'lastName'] },
       ],
     });
 
@@ -93,7 +139,7 @@ router.get(
 
 //confirm profile exists
 router.get(
-  "/validate",
+  '/validate',
   auth,
   asyncMiddleware(async (req, res) => {
     const profile = await Profile.findOne({
@@ -103,51 +149,28 @@ router.get(
     if (profile == null)
       return res
         .status(404)
-        .send({ error: "No profile yet. You should set it up once logged in" });
+        .send({ error: 'No profile yet. You should set it up once logged in' });
 
-    res.status(200).send("OK");
+    res.status(200).send('OK');
   })
 );
 
 // find the profile of another user
 router.get(
-  "/:userid",
+  '/:userid',
   asyncMiddleware(async (req, res) => {
     const profiles = await Profile.findOne({
       where: { userId: req.params.userid },
       attributes: {
-        exclude: ["id", "userId", "tierId", "roleId", "createdAt"],
+        exclude: ['id', 'userId', 'tierId', 'roleId', 'createdAt'],
       },
       include: [
-        { model: Tier, attributes: ["title", "description", "badgeUrl"] },
-        { model: Role, attributes: ["title", "description"] },
+        { model: Tier, attributes: ['title', 'description', 'badgeUrl'] },
+        { model: Role, attributes: ['title', 'description'] },
       ],
     });
 
     res.send(profiles);
-  })
-);
-
-//Update a database entry
-router.put(
-  "/modify",
-  auth,
-  asyncMiddleware(async (req, res) => {
-    await User.update(
-      {
-        bio: req.body.bio,
-        picture: req.body.picture,
-        avatar: req.body.avatar,
-        phoneNumber: req.body.phoneNumber,
-      },
-      {
-        where: {
-          id: req.user.userId,
-        },
-      }
-    );
-
-    res.send("okay");
   })
 );
 
