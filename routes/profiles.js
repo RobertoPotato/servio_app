@@ -65,6 +65,9 @@ router.put(
         error: "Profile doesn't exist",
       });
 
+    imageToDelete = profileInfo.dataValues.picture;
+    console.log(`Delete: ${imageToDelete}`);
+
     if (req.file == null) {
       await Profile.update(
         {
@@ -90,6 +93,13 @@ router.put(
           },
         }
       );
+
+      try {
+        fs.unlinkSync(`${imageToDelete}`);
+        console.log('Image Deleted');
+      } catch (e) {
+        console.log(`Error deleting image ${imageToDelete}`);
+      }
     }
 
     res.status(200).send('OK');
