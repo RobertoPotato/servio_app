@@ -1,7 +1,7 @@
 const asyncMiddleware = require('../middleware/asyncMiddleware');
 const auth = require('../middleware/auth');
 const express = require('express');
-const { Bid, User, Service, Status } = require('../models/index');
+const { Bid, User, Service, Status, Job } = require('../models/index');
 const { createAlert, bidsReceived } = require('../notifications');
 const router = express.Router();
 
@@ -109,7 +109,7 @@ router.get(
         userId: req.user.userId,
       },
       attributes: {
-        exclude: ['id', 'userId', 'serviceId', 'createdAt'],
+        exclude: ['userId', 'serviceId', 'createdAt'],
       },
       include: [
         {
@@ -160,6 +160,27 @@ router.delete(
   '/:id',
   auth,
   asyncMiddleware(async (req, res) => {
+    //cant delete bid if service is assigned to you
+    var bid = await Bid.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    if (!bid) return res.status(400).send({ error: 'Bid already deleted' });
+
+    var job = await Job.findOne({
+      where: {
+        serviceId: bid.dataValues.serviceId,
+      },
+    });
+
+    if (job.dataValues.agentId == req.user.userId)
+      return res.status(400).send({
+        error: "Can't withdraw bid because the job was already assigned to you",
+      });
+
+    console.log(job.dataValues.agentId);
     await Bid.destroy({
       where: {
         id: req.params.id,
