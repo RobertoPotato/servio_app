@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const {
   actualMin,
@@ -6,11 +6,11 @@ const {
   maxCategories,
   maxStatuses,
   maxServices,
-} = require("../constants");
+} = require('../constants');
 
-const { SERVICE_ACTIVE } = require("../statusCodes");
+const { SERVICE_ACTIVE } = require('../statusCodes');
 
-const faker = require("faker");
+const faker = require('faker');
 
 //all the services will be seeded with the active status
 module.exports = {
@@ -31,10 +31,10 @@ module.exports = {
       updatedAt: new Date(),
     }));
 
-    await queryInterface.bulkInsert("Services", services, {});
+    await queryInterface.bulkInsert('Services', services, {});
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete("Services", null, {});
+    await queryInterface.bulkDelete('Services', null, {});
   },
 };
